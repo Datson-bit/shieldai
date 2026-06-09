@@ -1,0 +1,799 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ShieldAI — PhishGuard Phishing Detector</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              darkspace: "#06080F",
+              surface: "rgba(10, 15, 30, 0.7)",
+              bordercolor: "rgba(255, 255, 255, 0.08)",
+              tealaccent: "#0D9488",
+              cyanaccent: "#06B6D4",
+            },
+            fontFamily: {
+              sans: ["Outfit", "system-ui", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+
+    <!-- Google Fonts - Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+      body {
+        background-color: #06080f;
+        font-family: "Outfit", sans-serif;
+      }
+
+      /* Glassmorphism panel */
+      .glass-panel {
+        background: rgba(10, 15, 30, 0.65);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      /* Subtle glow overlays */
+      .glow-teal {
+        box-shadow: 0 0 50px rgba(13, 148, 136, 0.18);
+        border: 1px solid rgba(13, 148, 136, 0.3);
+      }
+      .glow-red {
+        box-shadow: 0 0 50px rgba(239, 68, 68, 0.2);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+      }
+      .glow-amber {
+        box-shadow: 0 0 50px rgba(245, 158, 11, 0.2);
+        border: 1px solid rgba(245, 158, 11, 0.3);
+      }
+      .glow-green {
+        box-shadow: 0 0 50px rgba(16, 185, 129, 0.2);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+      }
+
+      /* Animations */
+      .fade-in-up {
+        animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Custom spinner */
+      .spinner {
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body class="text-gray-200 min-h-screen relative overflow-x-hidden pb-16">
+    <!-- Ambient background radial glows -->
+    <div
+      class="absolute top-[-15%] left-[-15%] w-[70%] h-[70%] rounded-full bg-tealaccent/5 blur-[140px] pointer-events-none"
+    ></div>
+    <div
+      class="absolute top-[25%] right-[-15%] w-[60%] h-[60%] rounded-full bg-cyanaccent/5 blur-[140px] pointer-events-none"
+    ></div>
+
+    <!-- Nav Bar -->
+    <nav
+      class="border-b border-white/5 px-6 py-4 relative z-10 backdrop-blur-md bg-darkspace/50"
+    >
+      <div class="max-w-4xl mx-auto flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div
+            class="w-11 h-11 rounded-xl overflow-hidden shadow-lg shadow-tealaccent/10 border border-white/10 flex items-center justify-center bg-[#0d1421]"
+          >
+            <img
+              src="logo.png"
+              alt="ShieldAI Logo"
+              class="w-full h-full object-cover"
+            />
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-white font-bold text-xl tracking-tight"
+                >ShieldAI</span
+              >
+              <span
+                class="text-[10px] text-tealaccent font-bold bg-tealaccent/10 border border-tealaccent/20 px-2 py-0.5 rounded-full uppercase tracking-wider"
+                >SECURE</span
+              >
+            </div>
+            <span class="text-gray-500 text-xs">by CipherLabs</span>
+          </div>
+        </div>
+        <div class="flex items-center gap-5">
+          <a
+            href="#how-it-works"
+            class="text-gray-400 hover:text-white text-sm font-medium transition-colors"
+            >How It Works</a
+          >
+          <button
+            onclick="toggleHistoryModal(true)"
+            class="text-gray-400 hover:text-white text-sm font-medium transition-colors flex items-center gap-1.5"
+          >
+            <i data-lucide="history" class="w-4 h-4"></i>
+            <span>History</span>
+          </button>
+          <div
+            class="p-2 bg-tealaccent/10 text-tealaccent rounded-full border border-tealaccent/20"
+          >
+            <i data-lucide="shield-check" class="w-4.5 h-4.5"></i>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="max-w-3xl mx-auto px-6 pt-16 relative z-10">
+      <!-- Hero Section -->
+      <div class="text-center mb-12">
+        <div
+          class="inline-flex items-center gap-2 bg-[#0d1421] border border-tealaccent/30 text-[10px] font-bold tracking-widest text-tealaccent px-4 py-1.5 rounded-full mb-6 uppercase"
+        >
+          AI-Powered • Real-Time • Secure
+        </div>
+        <h1
+          class="text-4xl sm:text-5xl font-extrabold text-white mb-4 tracking-tight leading-tight flex items-center justify-center gap-3"
+        >
+          Is This Link
+          <span
+            class="bg-gradient-to-r from-teal-400 to-cyan-400 bg-clip-text text-transparent"
+            >Safe?</span
+          >
+          <i
+            data-lucide="shield-check"
+            class="w-10 h-10 text-tealaccent filter drop-shadow-[0_0_8px_rgba(13,148,136,0.4)]"
+          ></i>
+        </h1>
+        <p
+          class="text-gray-400 text-base sm:text-lg max-w-xl mx-auto font-light leading-relaxed"
+        >
+          Paste any suspicious link and our AI will analyse it in seconds.
+        </p>
+      </div>
+
+      <!-- Scanner Card -->
+      <div
+        class="glass-panel rounded-2xl p-6 sm:p-8 mb-8 border border-white/5 shadow-2xl"
+      >
+        <div class="flex flex-col sm:flex-row gap-3">
+          <div class="relative flex-1">
+            <i
+              data-lucide="link"
+              class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 w-5 h-5"
+            ></i>
+            <input
+              id="urlInput"
+              type="text"
+              placeholder="Paste a suspicious URL here..."
+              class="w-full bg-[#0d101d]/90 border border-white/10 rounded-xl pl-12 pr-12 py-4 text-white placeholder-gray-500 text-sm focus:outline-none focus:border-tealaccent/50 focus:ring-4 focus:ring-tealaccent/10 transition-all font-normal"
+              onkeydown="if (event.key === 'Enter') scanLink();"
+            />
+            <button
+              onclick="pasteFromClipboard()"
+              class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-colors"
+              title="Paste from clipboard"
+            >
+              <i data-lucide="clipboard-list" class="w-5 h-5"></i>
+            </button>
+          </div>
+          <button
+            id="scanBtn"
+            onclick="scanLink()"
+            class="bg-gradient-to-r from-tealaccent to-cyanaccent hover:brightness-110 active:scale-[0.98] text-white font-semibold px-8 py-4 rounded-xl shadow-lg shadow-tealaccent/20 transition-all whitespace-nowrap flex items-center justify-center gap-2"
+          >
+            <i data-lucide="search" id="btnIcon" class="w-4.5 h-4.5"></i>
+            <span id="btnText">Scan Link</span>
+            <i data-lucide="chevron-right" class="w-4 h-4 ml-1"></i>
+          </button>
+        </div>
+        <p
+          class="text-gray-500 text-xs mt-4 text-center flex items-center justify-center gap-1.5"
+        >
+          <i data-lucide="lock" class="w-3.5 h-3.5"></i>
+          Free to use. No account required. Powered by
+          <span class="text-gray-400">Gemini AI</span>.
+        </p>
+      </div>
+
+      <!-- Result Container -->
+      <div id="resultCard" class="hidden fade-in-up"></div>
+
+      <!-- How It Works Section -->
+      <section id="how-it-works" class="mt-24">
+        <div class="text-center mb-10">
+          <h2 class="inline-block text-white font-bold text-2xl relative pb-3">
+            How It Works
+            <span
+              class="absolute bottom-0 left-1/4 right-1/4 h-0.5 bg-gradient-to-r from-tealaccent to-cyanaccent"
+            ></span>
+          </h2>
+        </div>
+
+        <div
+          class="flex flex-col md:flex-row items-stretch justify-between gap-6 relative"
+        >
+          <!-- Card 1 -->
+          <div
+            class="glass-panel flex-1 rounded-xl p-6 border border-white/5 relative hover:border-tealaccent/20 transition-all duration-300"
+          >
+            <div
+              class="absolute -top-3.5 -left-3.5 w-7 h-7 rounded-full bg-tealaccent text-darkspace flex items-center justify-center font-bold text-xs shadow-md"
+            >
+              1
+            </div>
+            <div
+              class="w-12 h-12 rounded-full bg-tealaccent/10 flex items-center justify-center text-tealaccent mb-4 mx-auto"
+            >
+              <i data-lucide="link" class="w-5 h-5"></i>
+            </div>
+            <h3 class="text-white font-semibold text-center text-base mb-2">
+              Paste Your Link
+            </h3>
+            <p
+              class="text-gray-400 text-center text-xs leading-relaxed font-light"
+            >
+              Paste any suspicious URL into the scanner above. No sign-up
+              needed.
+            </p>
+          </div>
+
+          <!-- Arrow -->
+          <div
+            class="hidden md:flex items-center justify-center text-tealaccent/30 shrink-0"
+          >
+            <i data-lucide="arrow-right" class="w-6 h-6"></i>
+          </div>
+
+          <!-- Card 2 -->
+          <div
+            class="glass-panel flex-1 rounded-xl p-6 border border-white/5 relative hover:border-tealaccent/20 transition-all duration-300"
+          >
+            <div
+              class="absolute -top-3.5 -left-3.5 w-7 h-7 rounded-full bg-tealaccent text-darkspace flex items-center justify-center font-bold text-xs shadow-md"
+            >
+              2
+            </div>
+            <div
+              class="w-12 h-12 rounded-full bg-cyan-500/10 flex items-center justify-center text-cyan-400 mb-4 mx-auto"
+            >
+              <i data-lucide="cpu" class="w-5 h-5"></i>
+            </div>
+            <h3 class="text-white font-semibold text-center text-base mb-2">
+              AI Analyses It
+            </h3>
+            <p
+              class="text-gray-400 text-center text-xs leading-relaxed font-light"
+            >
+              Gemini AI + VirusTotal + Google Safe Browsing run deep security
+              checks in seconds.
+            </p>
+          </div>
+
+          <!-- Arrow -->
+          <div
+            class="hidden md:flex items-center justify-center text-tealaccent/30 shrink-0"
+          >
+            <i data-lucide="arrow-right" class="w-6 h-6"></i>
+          </div>
+
+          <!-- Card 3 -->
+          <div
+            class="glass-panel flex-1 rounded-xl p-6 border border-white/5 relative hover:border-tealaccent/20 transition-all duration-300"
+          >
+            <div
+              class="absolute -top-3.5 -left-3.5 w-7 h-7 rounded-full bg-tealaccent text-darkspace flex items-center justify-center font-bold text-xs shadow-md"
+            >
+              3
+            </div>
+            <div
+              class="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-400 mb-4 mx-auto"
+            >
+              <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+            </div>
+            <h3 class="text-white font-semibold text-center text-base mb-2">
+              Get Your Verdict
+            </h3>
+            <p
+              class="text-gray-400 text-center text-xs leading-relaxed font-light"
+            >
+              Get a clear verdict with a risk score and detailed security
+              breakdown.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-white/5 mt-24 px-6 pt-8 pb-4 relative z-10">
+      <div
+        class="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4"
+      >
+        <div class="flex items-center gap-2">
+          <i data-lucide="shield" class="w-4 h-4 text-tealaccent"></i>
+          <p class="text-gray-500 text-xs font-light">
+            ShieldAI by CipherLabs — OPay Innovation Challenge 2026
+          </p>
+        </div>
+        <div class="flex items-center gap-4">
+          <p class="text-gray-500 text-xs font-light flex items-center gap-1.5">
+            <i data-lucide="cpu" class="w-3.5 h-3.5 text-tealaccent"></i>
+            Built with Gemini AI + VirusTotal
+          </p>
+          <span class="text-gray-600 text-xs">|</span>
+          <p class="text-gray-500 text-xs font-light">
+            © 2026 CipherLabs. All rights reserved.
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- History Modal -->
+    <div
+      id="historyModal"
+      class="hidden fixed inset-0 z-50 flex items-center justify-center p-4"
+    >
+      <!-- Backdrop -->
+      <div
+        class="absolute inset-0 bg-darkspace/80 backdrop-blur-sm"
+        onclick="toggleHistoryModal(false)"
+      ></div>
+      <!-- Modal Content -->
+      <div
+        class="glass-panel w-full max-w-lg rounded-2xl p-6 shadow-2xl relative z-10 animate-fade-in-up"
+      >
+        <div
+          class="flex items-center justify-between border-b border-white/5 pb-4 mb-4"
+        >
+          <div class="flex items-center gap-2">
+            <i data-lucide="history" class="w-5 h-5 text-tealaccent"></i>
+            <h3 class="text-white font-bold text-lg">Scan History</h3>
+          </div>
+          <button
+            onclick="toggleHistoryModal(false)"
+            class="text-gray-400 hover:text-white transition-colors"
+          >
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <div
+          id="historyList"
+          class="max-h-72 overflow-y-auto space-y-2.5 pr-1 text-sm"
+        >
+          <!-- Dynamically populated -->
+        </div>
+
+        <div
+          class="flex items-center justify-between border-t border-white/5 pt-4 mt-4 text-xs"
+        >
+          <button
+            onclick="clearHistory()"
+            class="text-rose-400 hover:underline flex items-center gap-1.5 transition-colors"
+          >
+            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+            Clear History
+          </button>
+          <p class="text-gray-500">Showing last 10 scans</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Frontend logic -->
+    <script>
+      const API_URL = "http://127.0.0.1:8000/api/scan/";
+      let scanHistory = JSON.parse(localStorage.getItem("scanHistory") || "[]");
+
+      // Initialize lucide on page load
+      document.addEventListener("DOMContentLoaded", () => {
+        lucide.createIcons();
+      });
+
+      async function scanLink() {
+        const input = document.getElementById("urlInput");
+        const url = input.value.trim();
+
+        if (!url) {
+          showError("Please paste a URL to scan.");
+          return;
+        }
+
+        setLoading(true);
+
+        try {
+          const response = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ url }),
+          });
+
+          if (!response.ok) {
+            const err = await response.json();
+            showError(err.error || "Something went wrong. Please try again.");
+            return;
+          }
+
+          const data = await response.json();
+
+          // Save to local scan history
+          saveToHistory(url, data);
+
+          renderResult(data);
+        } catch (err) {
+          showError(
+            "Could not connect to ShieldAI. Make sure the server is running.",
+          );
+        } finally {
+          setLoading(false);
+        }
+      }
+
+      async function pasteFromClipboard() {
+        try {
+          const text = await navigator.clipboard.readText();
+          if (text) {
+            document.getElementById("urlInput").value = text;
+          }
+        } catch (err) {
+          console.log("Clipboard read blocked or unsupported", err);
+        }
+      }
+
+      function saveToHistory(url, scanData) {
+        const timestamp = new Date().toLocaleString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true,
+        });
+        const newScan = {
+          url,
+          verdict: scanData.verdict,
+          risk_score: scanData.risk_score,
+          timestamp,
+          data: scanData,
+        };
+        // Filter duplicates
+        scanHistory = scanHistory.filter((h) => h.url !== url);
+        scanHistory.unshift(newScan);
+        if (scanHistory.length > 10) scanHistory.pop();
+        localStorage.setItem("scanHistory", JSON.stringify(scanHistory));
+      }
+
+      function toggleHistoryModal(show) {
+        const modal = document.getElementById("historyModal");
+        if (show) {
+          modal.classList.remove("hidden");
+          renderHistoryList();
+        } else {
+          modal.classList.add("hidden");
+        }
+      }
+
+      function renderHistoryList() {
+        const list = document.getElementById("historyList");
+        if (scanHistory.length === 0) {
+          list.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <i data-lucide="history" class="w-8 h-8 mx-auto mb-2 opacity-35"></i>
+                        <p>No scans found in history</p>
+                    </div>
+                `;
+          lucide.createIcons();
+          return;
+        }
+
+        list.innerHTML = scanHistory
+          .map((h, index) => {
+            const config = getVerdictConfig(h.verdict);
+            return `
+                    <div onclick="loadFromHistory(${index})" class="flex items-center justify-between gap-4 p-3 bg-white/5 border border-white/5 rounded-xl cursor-pointer hover:bg-white/10 transition-all">
+                        <div class="min-w-0 flex-1">
+                            <p class="text-white text-xs truncate font-medium">${h.url}</p>
+                            <p class="text-gray-400 text-[10px] mt-0.5">${h.timestamp}</p>
+                        </div>
+                        <div class="flex items-center gap-3 shrink-0">
+                            <span class="text-xs font-bold ${config.scoreColor}">${h.risk_score}/100</span>
+                            ${getStatusBadge(h.verdict)}
+                        </div>
+                    </div>
+                `;
+          })
+          .join("");
+        lucide.createIcons();
+      }
+
+      function loadFromHistory(index) {
+        const scan = scanHistory[index];
+        if (scan) {
+          document.getElementById("urlInput").value = scan.url;
+          renderResult(scan.data, scan.timestamp);
+          toggleHistoryModal(false);
+        }
+      }
+
+      function clearHistory() {
+        scanHistory = [];
+        localStorage.removeItem("scanHistory");
+        renderHistoryList();
+      }
+
+      function setLoading(loading) {
+        const btn = document.getElementById("scanBtn");
+        const input = document.getElementById("urlInput");
+
+        if (loading) {
+          btn.disabled = true;
+          input.disabled = true;
+          btn.classList.add("opacity-75", "cursor-not-allowed");
+          btn.innerHTML = `
+                    <i data-lucide="loader-2" class="w-4.5 h-4.5 spinner"></i>
+                    <span>Analyzing...</span>
+                `;
+        } else {
+          btn.disabled = false;
+          input.disabled = false;
+          btn.classList.remove("opacity-75", "cursor-not-allowed");
+          btn.innerHTML = `
+                    <i data-lucide="search" class="w-4.5 h-4.5"></i>
+                    <span id="btnText">Scan Link</span>
+                    <i data-lucide="chevron-right" class="w-4 h-4 ml-1"></i>
+                `;
+        }
+        lucide.createIcons();
+      }
+
+      function showError(message) {
+        const card = document.getElementById("resultCard");
+        card.className = "fade-in-up";
+        card.innerHTML = `
+                <div class="glass-panel border-red-500/25 rounded-2xl p-6 text-center shadow-lg">
+                    <div class="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-3 text-red-400">
+                        <i data-lucide="alert-octagon" class="w-6 h-6"></i>
+                    </div>
+                    <p class="text-red-400 text-sm font-medium">${message}</p>
+                </div>
+            `;
+        lucide.createIcons();
+      }
+
+      function getVerdictConfig(verdict) {
+        const configs = {
+          SAFE: {
+            border: "border-l-emerald-500 border-l-4",
+            badge: "bg-emerald-500/10 text-emerald-400 border-emerald-500/25",
+            glow: "glow-green",
+            scoreColor: "text-emerald-400",
+            icon: "shield-check",
+            iconColor: "text-emerald-400",
+            bgIcon: "bg-emerald-500/10",
+            label: "SAFE",
+          },
+          SUSPICIOUS: {
+            border: "border-l-amber-500 border-l-4",
+            badge: "bg-amber-500/10 text-amber-400 border-amber-500/25",
+            glow: "glow-amber",
+            scoreColor: "text-amber-400",
+            icon: "alert-triangle",
+            iconColor: "text-amber-400",
+            bgIcon: "bg-amber-500/10",
+            label: "SUSPICIOUS",
+          },
+          DANGEROUS: {
+            border: "border-l-red-500 border-l-4",
+            badge: "bg-red-500/10 text-red-400 border-red-500/25",
+            glow: "glow-red",
+            scoreColor: "text-red-400",
+            icon: "skull",
+            iconColor: "text-red-400",
+            bgIcon: "bg-red-500/10",
+            label: "DANGEROUS",
+          },
+        };
+        return configs[verdict] || configs.SUSPICIOUS;
+      }
+
+      function getStatusBadge(status) {
+        const badges = {
+          PASSED: `<span class="text-[9px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/25 px-2 py-0.5 rounded tracking-wide uppercase">PASSED</span>`,
+          FAILED: `<span class="text-[9px] font-bold bg-red-500/15 text-red-400 border border-red-500/25 px-2 py-0.5 rounded tracking-wide uppercase">FAILED</span>`,
+          WARNING: `<span class="text-[9px] font-bold bg-amber-500/15 text-amber-400 border border-amber-500/25 px-2 py-0.5 rounded tracking-wide uppercase">WARNING</span>`,
+          SKIPPED: `<span class="text-[9px] font-bold bg-gray-500/15 text-gray-400 border border-gray-500/20 px-2 py-0.5 rounded tracking-wide uppercase">SKIPPED</span>`,
+          ERROR: `<span class="text-[9px] font-bold bg-rose-500/15 text-rose-400 border border-rose-500/20 px-2 py-0.5 rounded tracking-wide uppercase">ERROR</span>`,
+          PENDING: `<span class="text-[9px] font-bold bg-blue-500/15 text-blue-400 border border-blue-500/20 px-2 py-0.5 rounded tracking-wide uppercase animate-pulse">PENDING</span>`,
+          MALICIOUS: `<span class="text-[9px] font-bold bg-red-500/15 text-red-400 border border-red-500/25 px-2 py-0.5 rounded tracking-wide uppercase">MALICIOUS</span>`,
+          FLAGGED: `<span class="text-[9px] font-bold bg-red-500/15 text-red-400 border border-red-500/25 px-2 py-0.5 rounded tracking-wide uppercase">FLAGGED</span>`,
+          "HIGH RISK": `<span class="text-[9px] font-bold bg-red-500/15 text-red-400 border border-red-500/25 px-2 py-0.5 rounded tracking-wide uppercase font-semibold">HIGH RISK</span>`,
+          SAFE: `<span class="text-[9px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/25 px-2 py-0.5 rounded tracking-wide uppercase">SAFE</span>`,
+          SUSPICIOUS: `<span class="text-[9px] font-bold bg-amber-500/15 text-amber-400 border border-amber-500/25 px-2 py-0.5 rounded tracking-wide uppercase">SUSPICIOUS</span>`,
+          DANGEROUS: `<span class="text-[9px] font-bold bg-red-500/15 text-red-400 border border-red-500/25 px-2 py-0.5 rounded tracking-wide uppercase">DANGEROUS</span>`,
+        };
+        return badges[status] || badges.SKIPPED;
+      }
+
+      function copyScannedUrl() {
+        const urlText = document.getElementById("scannedUrlText").textContent;
+        navigator.clipboard.writeText(urlText).then(() => {
+          const btnText = document.getElementById("copyBtnText");
+          btnText.textContent = "Copied!";
+          setTimeout(() => {
+            btnText.textContent = "Copy";
+          }, 2000);
+        });
+      }
+
+      function renderResult(data, timestampStr = null) {
+        const card = document.getElementById("resultCard");
+        const config = getVerdictConfig(data.verdict);
+        const { breakdown } = data;
+
+        const timeDisplay =
+          timestampStr ||
+          new Date().toLocaleString("en-US", {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+          });
+
+        // Warning Alert Panel if not SAFE
+        const warningAlertHTML =
+          data.verdict !== "SAFE"
+            ? `<div class="mt-4 p-4 bg-red-500/5 border border-red-500/15 rounded-xl flex items-start gap-3 text-red-400 font-medium">
+                    <i data-lucide="alert-triangle" class="w-5 h-5 shrink-0 mt-0.5"></i>
+                    <div>
+                        <p class="text-xs font-bold text-red-300">Impersonation / Phishing Risk warning</p>
+                        <div class="text-[11px] font-light mt-1.5 space-y-1.5 text-red-400/90 leading-relaxed">
+                            ${data.active_flags.map((f) => `<div class="flex items-center gap-1.5">• <span>${f}</span></div>`).join("")}
+                        </div>
+                    </div>
+                   </div>`
+            : "";
+
+        const breakdownHTML = `
+                <div class="mt-8 space-y-3.5">
+                    <div class="flex items-center justify-between mb-4">
+                        <p class="text-gray-500 text-[10px] uppercase tracking-widest font-bold">Security Breakdown</p>
+                        <span class="h-px bg-white/5 flex-1 ml-4"></span>
+                    </div>
+                    ${renderCheckRow("activity", "VirusTotal Check", breakdown.virustotal)}
+                    ${renderCheckRow("calendar", "Domain Age", breakdown.domain_age)}
+                    ${renderCheckRow("search", "Google Safe Browsing", breakdown.safe_browsing)}
+                    ${renderCheckRow("link-2", "URL Structure", breakdown.url_structure)}
+                    ${renderCheckRow("sparkles", "Gemini AI Analysis", breakdown.gemini_ai)}
+                </div>
+            `;
+
+        card.className = "fade-in-up";
+        card.innerHTML = `
+                <div class="flex items-center justify-between mb-3 mt-8">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="shield-check" class="w-4.5 h-4.5 text-tealaccent"></i>
+                        <span class="text-white font-bold text-sm">Your Scan Result</span>
+                    </div>
+                    <button onclick="toggleHistoryModal(true)" class="bg-[#141925] hover:bg-[#1c2233] border border-white/5 text-gray-400 hover:text-white px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all flex items-center gap-1.5">
+                        <i data-lucide="history" class="w-3.5 h-3.5"></i>
+                        Scan History
+                    </button>
+                </div>
+                
+                <div class="glass-panel border-white/5 ${config.border} ${config.glow} rounded-2xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
+                    <div class="flex items-start justify-between flex-wrap gap-4 mb-4">
+                        <div class="flex items-center gap-4">
+                            <div class="p-3 ${config.bgIcon} ${config.iconColor} rounded-xl shadow-lg border border-white/5">
+                                <i data-lucide="${config.icon}" class="w-8 h-8"></i>
+                            </div>
+                            <div>
+                                <span class="inline-block border ${config.badge} text-[10px] font-extrabold px-3 py-0.5 rounded-full tracking-widest mb-1.5">${config.label}</span>
+                                <p class="text-white font-bold text-lg leading-snug">${data.message}</p>
+                            </div>
+                        </div>
+                        <div class="text-left sm:text-right shrink-0">
+                            <p class="text-gray-500 text-[9px] uppercase font-bold tracking-widest mb-0.5">Risk Score</p>
+                            <p class="text-3xl font-extrabold ${config.scoreColor}">${data.risk_score}<span class="text-xs text-gray-500 font-normal"> / 100</span></p>
+                            <p class="text-gray-500 text-[10px] mt-1">Scanned: ${timeDisplay}</p>
+                        </div>
+                    </div>
+                    
+                    ${warningAlertHTML}
+                    
+                    ${breakdownHTML}
+                    
+                    <!-- Scanned URL indicator -->
+                    <div class="mt-6 p-3 bg-[#0d101c] border border-white/5 rounded-xl flex items-center justify-between gap-4">
+                        <div class="flex items-center gap-2 min-w-0">
+                            <i data-lucide="globe" class="w-4 h-4 text-gray-500 shrink-0"></i>
+                            <span class="text-xs text-gray-400 truncate select-all" id="scannedUrlText">${document.getElementById("urlInput").value}</span>
+                        </div>
+                        <button onclick="copyScannedUrl()" class="text-tealaccent hover:text-cyan-400 transition-colors shrink-0 flex items-center gap-1.5 text-xs font-semibold">
+                            <i data-lucide="copy" class="w-3.5 h-3.5" id="copyBtnIcon"></i>
+                            <span id="copyBtnText">Copy</span>
+                        </button>
+                    </div>
+                    
+                    <div class="mt-6 pt-5 border-t border-white/5 flex justify-between items-center gap-4">
+                        <p class="text-gray-600 text-[10px]">Security verified by ShieldAI core engine</p>
+                        <button onclick="document.getElementById('urlInput').value=''; document.getElementById('resultCard').className='hidden';" class="text-xs font-semibold text-tealaccent hover:text-cyan-400 hover:underline flex items-center gap-1.5 transition-colors">
+                            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                            Scan another link
+                        </button>
+                    </div>
+                </div>
+            `;
+        lucide.createIcons();
+      }
+
+      function renderCheckRow(iconName, label, check) {
+        if (!check) return "";
+
+        // Map statuses to specific status tags
+        let statusTag = check.status;
+        if (check.status === "FAILED" && label === "Gemini AI Analysis") {
+          statusTag = "MALICIOUS";
+        } else if (
+          check.status === "FAILED" &&
+          label === "Google Safe Browsing"
+        ) {
+          statusTag = "FLAGGED";
+        } else if (check.status === "WARNING" && label === "Domain Age") {
+          statusTag = "HIGH RISK";
+        }
+
+        return `
+                <div class="flex items-center justify-between gap-4 bg-[#080b14]/65 border border-white/5 rounded-xl px-4 py-3.5 hover:bg-[#0f1423]/50 transition-colors duration-200">
+                    <div class="flex items-center gap-3.5 min-w-0">
+                        <div class="p-2 bg-white/5 rounded-lg text-gray-400 shrink-0">
+                            <i data-lucide="${iconName}" class="w-4 h-4 text-tealaccent"></i>
+                        </div>
+                        <div class="min-w-0">
+                            <p class="text-white text-sm font-semibold truncate">${label}</p>
+                            <p class="text-gray-400 text-xs mt-0.5 truncate max-w-[200px] sm:max-w-[400px] font-light">${check.note || "No details available"}</p>
+                        </div>
+                    </div>
+                    <div class="shrink-0">
+                        ${getStatusBadge(statusTag)}
+                    </div>
+                </div>
+            `;
+      }
+    </script>
+  </body>
+</html>
