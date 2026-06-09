@@ -41,3 +41,7 @@ class ScanURLView(APIView):
         )
 
         return Response(result, status=status.HTTP_200_OK)
+
+class HealthCheckView(APIView):
+    def get(self, request):
+        return Response({"status": "ok", "service": "ShieldAI PhishGuard"})
