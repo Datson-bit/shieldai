@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ShieldAI — PhishGuard Phishing Detector</title>
+    <link rel="icon" type="image/png" href="/static/phishguard/logo.png" />
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -116,7 +117,7 @@
             class="w-11 h-11 rounded-xl overflow-hidden shadow-lg shadow-tealaccent/10 border border-white/10 flex items-center justify-center bg-[#0d1421]"
           >
             <img
-              src="logo.png"
+              src="Logo.png"
               alt="ShieldAI Logo"
               class="w-full h-full object-cover"
             />
@@ -415,7 +416,7 @@
 
     <!-- Frontend logic -->
     <script>
-      const API_URL = "http://127.0.0.1:8000/api/scan/";
+      const API_URL = "/api/scan/";
       let scanHistory = JSON.parse(localStorage.getItem("scanHistory") || "[]");
 
       // Initialize lucide on page load
