@@ -31,11 +31,10 @@ def check_safe_browsing(url: str) -> dict:
                 "threatEntries": [{"url": url}],
             },
         }
-
         response = requests.post(
             f"https://safebrowsing.googleapis.com/v4/threatMatches:find?key={api_key}",
             json=payload,
-            timeout=10,
+            timeout=10.0,
         )
 
         if response.status_code != 200:

@@ -1,58 +1,95 @@
 def calculate_risk(url_analysis, virustotal, domain_age, safe_browsing, gemini) -> dict:
 
     # Weighted scoring
-    url_score       = url_analysis.get("score", 0) * 0.20
-    vt_score        = virustotal.get("score", 0)   * 0.30
-    domain_score    = domain_age.get("score", 0)   * 0.20
-    sb_score        = safe_browsing.get("score", 0)* 0.20
-    gemini_score    = gemini.get("score", 0)        * 0.10
+    url_score    = url_analysis.get("score", 0) * 0.20
+    vt_score     = virustotal.get("score", 0)   * 0.25
+    domain_score = domain_age.get("score", 0)   * 0.15
+    sb_score     = safe_browsing.get("score", 0)* 0.20
+    gemini_score = gemini.get("score", 0)       * 0.20
+
+    # Zero out checks with no data — missing data is not a threat signal
+    if virustotal.get("status") in ["PENDING", "ERROR", "SKIPPED"]:
+        vt_score = 0
+    if domain_age.get("status") in ["ERROR", "SKIPPED"]:
+        domain_score = 0
+    if gemini.get("status") in ["ERROR", "SKIPPED"]:
+        gemini_score = 0
 
     total_score = int(url_score + vt_score + domain_score + sb_score + gemini_score)
     total_score = min(total_score, 100)
 
-    # Instant dangerous overrides
+    # ── Hard overrides ───────────────────────────────────────────────
+
+    # Google confirmed threat — always dangerous
     if safe_browsing.get("status") == "FAILED":
         total_score = max(total_score, 75)
 
+    # VirusTotal many vendors — always dangerous
     if virustotal.get("malicious_count", 0) >= 5:
         total_score = max(total_score, 80)
 
-    # Overrides for high-risk findings (impersonation, multi-layer flags)
+    # VirusTotal WARNING — at least suspicious
+    if virustotal.get("status") == "WARNING":
+        total_score = max(total_score, 25)
+
+    # URL structure failed — at least suspicious
+    if url_analysis.get("status") == "FAILED":
+        total_score = max(total_score, 20)
+
+    # URL structure failed + VirusTotal flagged — serious
+    if url_analysis.get("status") == "FAILED" and virustotal.get("malicious_count", 0) >= 2:
+        total_score = max(total_score, 60)
+    elif url_analysis.get("status") == "FAILED" and virustotal.get("malicious_count", 0) >= 1:
+        total_score = max(total_score, 40)
+
+    # ── Gemini overrides ─────────────────────────────────────────────
     gemini_analysis = gemini.get("analysis") or {}
+    gemini_suspicious = gemini_analysis.get("is_suspicious", False)
+    gemini_impersonates = gemini_analysis.get("impersonates")
+    gemini_confidence = gemini_analysis.get("confidence", "LOW")
 
-    # 1. Impersonation of a bank/brand is highly dangerous
-    if gemini_analysis.get("is_suspicious") and gemini_analysis.get("impersonates"):
-        total_score = max(total_score, 85)
-    # 2. High confidence AI phishing classification
-    elif gemini.get("status") == "FAILED":
+    # Count confirmed flags from other checks
+    other_flags = sum([
+        1 if url_analysis.get("status") == "FAILED" else 0,
+        1 if virustotal.get("status") in ["FAILED", "WARNING"] else 0,
+        1 if domain_age.get("status") == "FAILED" else 0,
+        1 if safe_browsing.get("status") == "FAILED" else 0,
+    ])
+
+    if gemini_suspicious and gemini_impersonates and gemini_confidence == "HIGH" and other_flags >= 1:
         total_score = max(total_score, 75)
-    # 3. Medium confidence AI phishing classification
-    elif gemini.get("status") == "WARNING" and gemini_analysis.get("confidence") == "MEDIUM":
+    elif gemini_suspicious and gemini_impersonates and gemini_confidence == "HIGH":
         total_score = max(total_score, 50)
+    elif gemini_suspicious and gemini_impersonates and gemini_confidence == "MEDIUM":
+        total_score = max(total_score, 40)
+    elif gemini_suspicious and gemini_confidence == "HIGH" and other_flags >= 1:
+        total_score = max(total_score, 45)
+    elif gemini_suspicious and gemini_confidence == "MEDIUM" and other_flags >= 1:
+        total_score = max(total_score, 30)
+    elif gemini_suspicious and other_flags == 0:
+        total_score = max(total_score, 15)
 
-    # 4. Multi-layer threat: URL structure FAILED and VirusTotal flags it
-    if url_analysis.get("status") == "FAILED" and virustotal.get("malicious_count", 0) >= 1:
-        total_score = max(total_score, 65)
-
-    # Override: if key security checks cannot fully determine or analyze the URL, mark it as SUSPICIOUS (score >= 30)
+    # ── Incomplete checks — missing data is not a threat ─────────────
     incomplete_checks = []
     if virustotal.get("status") in ["PENDING", "ERROR"]:
         incomplete_checks.append("VirusTotal")
     if gemini.get("status") == "ERROR":
         incomplete_checks.append("Gemini AI")
-    if domain_age.get("status") == "ERROR" or (domain_age.get("status") == "WARNING" and "determine" in str(domain_age.get("note", "")).lower()):
+    if domain_age.get("status") == "ERROR":
         incomplete_checks.append("Domain Age")
 
     if incomplete_checks:
-        total_score = max(total_score, 30)
+        total_score = max(total_score, 8)
 
-    # Determine verdict
+    total_score = min(total_score, 100)
+
+    # ── Verdict ──────────────────────────────────────────────────────
     if total_score >= 60:
         verdict = "DANGEROUS"
         color = "red"
         message = "This link is dangerous. Do not click or enter any personal information."
         icon = "danger"
-    elif total_score >= 30:
+    elif total_score >= 25:
         verdict = "SUSPICIOUS"
         color = "amber"
         message = "This link shows suspicious characteristics. Proceed with extreme caution."
@@ -63,10 +100,10 @@ def calculate_risk(url_analysis, virustotal, domain_age, safe_browsing, gemini) 
         message = "This link appears to be safe. No significant threats detected."
         icon = "safe"
 
-    # Build plain English explanation
+    # ── Active flags ─────────────────────────────────────────────────
     active_flags = []
 
-    if virustotal.get("status") == "FAILED":
+    if virustotal.get("status") in ["FAILED", "WARNING"]:
         active_flags.append(virustotal.get("note", "Flagged by security vendors"))
     if safe_browsing.get("status") == "FAILED":
         active_flags.append(safe_browsing.get("note", "Flagged by Google Safe Browsing"))
@@ -74,8 +111,10 @@ def calculate_risk(url_analysis, virustotal, domain_age, safe_browsing, gemini) 
         active_flags.append(domain_age.get("note", "Domain is very new"))
     if url_analysis.get("status") == "FAILED":
         active_flags.append(url_analysis.get("note", "Suspicious URL structure"))
-    if gemini.get("status") in ["FAILED", "WARNING"]:
+    if gemini.get("status") in ["FAILED", "WARNING", "MALICIOUS"]:
         active_flags.append(gemini.get("note", "AI detected suspicious content"))
+    if gemini_impersonates and gemini_suspicious:
+        active_flags.append(f"Impersonation detected: {gemini_impersonates}")
     if incomplete_checks:
         active_flags.append(f"Could not fully analyze link via: {', '.join(incomplete_checks)}")
 

@@ -23,11 +23,19 @@ You are a cybersecurity expert specialising in phishing detection for Nigerian i
 
 Analyse this URL for phishing indicators: {url}
 
-Focus on:
-1. Does the domain impersonate a known Nigerian bank, fintech, or government service?
+IMPORTANT RULES:
+- Only mark is_suspicious as true if the URL is ACTIVELY impersonating a known brand or has clear credential harvesting patterns
+- Do NOT mark legitimate websites as suspicious simply because they are unfamiliar or not Nigerian
+- A website being unknown is NOT a reason to flag it as suspicious
+- Only flag if there is clear evidence of deception or impersonation
+
+Focus specifically on:
+1. Is the domain actively impersonating a known Nigerian bank, fintech, or government service?
    (OPay, GTBank, Zenith Bank, Access Bank, First Bank, Kuda, Moniepoint, PalmPay, JAMB, FIRS, NIN, WAEC)
-2. Are there suspicious patterns that suggest credential harvesting?
-3. Does the URL structure suggest it is trying to deceive users?
+2. Are there clear credential harvesting patterns — fake login pages, urgent account warnings?
+3. Is the URL deliberately misleading — typosquatting, lookalike domains?
+
+If none of the above apply — mark is_suspicious as false.
 
 Respond in this exact JSON format with no additional text:
 {{
@@ -39,7 +47,7 @@ Respond in this exact JSON format with no additional text:
 """
 
         response = client.models.generate_content(
-            model="gemini-2.5-flash-lite",
+            model="gemini-2.5-flash",
             contents=prompt,
         )
         text = response.text.strip()

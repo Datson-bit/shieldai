@@ -24,7 +24,7 @@ def check_virustotal(url: str) -> dict:
         response = requests.get(
             f"https://www.virustotal.com/api/v3/urls/{url_id}",
             headers=headers,
-            timeout=10,
+            timeout=3.0,
         )
 
         if response.status_code == 404:
@@ -33,7 +33,7 @@ def check_virustotal(url: str) -> dict:
                 "https://www.virustotal.com/api/v3/urls",
                 headers=headers,
                 data={"url": url},
-                timeout=10,
+                timeout=3.0,
             )
             if submit_response.status_code == 200:
                 return {
