@@ -1,5 +1,7 @@
 import logging
 import os
+import html
+import asyncio
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from telegram import Update
 from telegram.ext import (
@@ -18,24 +20,30 @@ from .services.scorer import calculate_risk
 
 logger = logging.getLogger(__name__)
 
+# Reuse a module-level executor to avoid spawning/destroying threads per request
+bot_executor = ThreadPoolExecutor(max_workers=16)
+
+# Cached Application instance
+_telegram_app = None
+_app_lock = asyncio.Lock()
+
 
 def run_scan(url: str) -> dict:
     url_analysis = analyse_url(url)
 
-    with ThreadPoolExecutor(max_workers=4) as executor:
-        futures = {
-            executor.submit(check_virustotal, url): "virustotal",
-            executor.submit(check_domain_age, url): "domain_age",
-            executor.submit(check_safe_browsing, url): "safe_browsing",
-            executor.submit(analyse_with_gemini, url): "gemini",
-        }
-        results = {}
-        for future in as_completed(futures):
-            key = futures[future]
-            try:
-                results[key] = future.result()
-            except Exception as e:
-                results[key] = {"status": "ERROR", "score": 0, "note": str(e)}
+    futures = {
+        bot_executor.submit(check_virustotal, url): "virustotal",
+        bot_executor.submit(check_domain_age, url): "domain_age",
+        bot_executor.submit(check_safe_browsing, url): "safe_browsing",
+        bot_executor.submit(analyse_with_gemini, url): "gemini",
+    }
+    results = {}
+    for future in as_completed(futures):
+        key = futures[future]
+        try:
+            results[key] = future.result()
+        except Exception as e:
+            results[key] = {"status": "ERROR", "score": 0, "note": str(e)}
 
     return calculate_risk(
         url_analysis,
@@ -49,36 +57,36 @@ def run_scan(url: str) -> dict:
 def format_verdict(result: dict) -> str:
     verdict = result["verdict"]
     score = result["risk_score"]
-    message = result["message"]
+    message = html.escape(result["message"])
     breakdown = result["breakdown"]
     active_flags = result.get("active_flags", [])
 
     if verdict == "DANGEROUS":
         emoji = "🚨"
-        header = "DANGEROUS LINK DETECTED"
+        header = "🚨 <b>DANGEROUS LINK DETECTED</b>"
     elif verdict == "SUSPICIOUS":
         emoji = "⚠️"
-        header = "SUSPICIOUS LINK"
+        header = "⚠️ <b>SUSPICIOUS LINK</b>"
     else:
         emoji = "✅"
-        header = "LINK APPEARS SAFE"
+        header = "✅ <b>LINK APPEARS SAFE</b>"
 
     status_emoji = {
         "PASSED": "✅", "FAILED": "❌", "WARNING": "⚠️",
         "SKIPPED": "⏭", "PENDING": "⏳", "ERROR": "❓", "MALICIOUS": "🚫",
     }
 
-    text = f"{emoji} *{header}*\n"
-    text += f"Risk Score: *{score}/100*\n\n"
+    text = f"{header}\n"
+    text += f"Risk Score: <b>{score}/100</b>\n\n"
     text += f"{message}\n\n"
 
     if active_flags:
-        text += "*What we found:*\n"
+        text += "<b>What we found:</b>\n"
         for flag in active_flags[:3]:
-            text += f"• {flag}\n"
+            text += f"• {html.escape(flag)}\n"
         text += "\n"
 
-    text += "*Security Checks:*\n"
+    text += "<b>Security Checks:</b>\n"
     checks = [
         ("🔗 URL Structure", breakdown.get("url_structure", {}).get("status", "ERROR")),
         ("🛡 VirusTotal", breakdown.get("virustotal", {}).get("status", "ERROR")),
@@ -91,61 +99,64 @@ def format_verdict(result: dict) -> str:
         s_emoji = status_emoji.get(check_status, "❓")
         text += f"{check_name}: {s_emoji}\n"
 
-    text += f"\n_Powered by ShieldAI · CipherLabs_"
+    text += f"\n<i>Powered by ShieldAI · CipherLabs</i>"
     return text
 
 
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        "👋 Welcome to *ShieldAI PhishGuard*\n\n"
+        "👋 Welcome to <b>ShieldAI PhishGuard</b>\n\n"
         "I protect Nigerians from phishing links and online fraud.\n\n"
-        "*How to use:*\n"
+        "<b>How to use:</b>\n"
         "Send me any suspicious link and I will analyse it instantly "
         "across 5 security checks.\n\n"
-        "*Example:*\n"
-        "`https://gtb4nk-verify.xyz`\n\n"
+        "<b>Example:</b>\n"
+        "<code>https://gtb4nk-verify.xyz</code>\n\n"
         "I will tell you if it is:\n"
         "✅ Safe\n"
         "⚠️ Suspicious\n"
         "🚨 Dangerous\n\n"
-        "_Powered by ShieldAI · CipherLabs_",
-        parse_mode="Markdown"
+        "<i>Powered by ShieldAI · CipherLabs</i>",
+        parse_mode="HTML"
     )
 
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        "*ShieldAI PhishGuard Help*\n\n"
+        "<b>ShieldAI PhishGuard Help</b>\n\n"
         "Simply send any URL and I will scan it.\n\n"
-        "*What I check:*\n"
+        "<b>What I check:</b>\n"
         "• URL structure analysis\n"
         "• VirusTotal — 70+ security vendors\n"
         "• Domain age verification\n"
         "• Google Safe Browsing database\n"
         "• Gemini AI impersonation detection\n\n"
-        "*Commands:*\n"
+        "<b>Commands:</b>\n"
         "/start — Welcome message\n"
         "/help — This message\n"
         "/about — About ShieldAI\n\n"
-        "_Powered by ShieldAI · CipherLabs_",
-        parse_mode="Markdown"
+        "<i>Powered by ShieldAI · CipherLabs</i>",
+        parse_mode="HTML"
     )
 
 
 async def about_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        "*About ShieldAI*\n\n"
+        "<b>About ShieldAI</b>\n\n"
         "ShieldAI is Nigeria's first intelligent two-layer fraud prevention platform.\n\n"
-        "*PhishGuard* detects scam links before you click them.\n"
-        "*BehaviorID* blocks attackers even when they have your password.\n\n"
+        "<b>PhishGuard</b> detects scam links before you click them.\n"
+        "<b>BehaviorID</b> blocks attackers even when they have your password.\n\n"
         "Built by *CipherLabs* for the OPay Innovation Challenge 2026.\n\n"
         "🌐 Web App: your-railway-url.up.railway.app\n\n"
-        "_Detect. Authenticate. Defend._",
-        parse_mode="Markdown"
+        "<i>Detect. Authenticate. Defend.</i>",
+        parse_mode="HTML"
     )
 
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not update.message or not update.message.text:
+        return
+
     text = update.message.text.strip()
 
     # Check if it looks like a URL
@@ -166,15 +177,15 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 return
 
             # Run scan
-            import asyncio
-            loop = asyncio.get_event_loop()
+            loop = asyncio.get_running_loop()
             result = await loop.run_in_executor(None, run_scan, text)
 
             verdict_text = format_verdict(result)
 
-            await scanning_msg.edit_text(verdict_text, parse_mode="Markdown")
+            await scanning_msg.edit_text(verdict_text, parse_mode="HTML")
 
         except Exception as e:
+            logger.exception("Error scanning URL in telegram bot")
             await scanning_msg.edit_text(
                 "❌ Something went wrong while scanning.\n\n"
                 "Please try again or visit our web app."
@@ -182,20 +193,32 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         await update.message.reply_text(
             "Please send a URL to scan.\n\n"
-            "Example: `https://suspicious-link.com`\n\n"
+            "Example: <code>https://suspicious-link.com</code>\n\n"
             "Type /help for more information.",
-            parse_mode="Markdown"
+            parse_mode="HTML"
         )
 
 
-def get_telegram_app():
-    token = settings.TELEGRAM_BOT_TOKEN
-    if not token:
-        return None
+async def get_telegram_app():
+    global _telegram_app
+    if _telegram_app is not None:
+        return _telegram_app
 
-    app = Application.builder().token(token).build()
-    app.add_handler(CommandHandler("start", start_command))
-    app.add_handler(CommandHandler("help", help_command))
-    app.add_handler(CommandHandler("about", about_command))
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
-    return app
+    async with _app_lock:
+        if _telegram_app is not None:
+            return _telegram_app
+
+        token = settings.TELEGRAM_BOT_TOKEN
+        if not token:
+            return None
+
+        app = Application.builder().token(token).build()
+        app.add_handler(CommandHandler("start", start_command))
+        app.add_handler(CommandHandler("help", help_command))
+        app.add_handler(CommandHandler("about", about_command))
+        app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
+        
+        await app.initialize()
+        await app.start()
+        _telegram_app = app
+        return _telegram_app

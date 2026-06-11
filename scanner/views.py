@@ -11,12 +11,15 @@ from .services.gemini_analyser import analyse_with_gemini
 from .services.scorer import calculate_risk
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-# from twilio.twiml.messaging_response import MessagingResponse
-# from django.http import HttpResponse
-# from django.views.decorators.csrf import csrf_exempt
-# from django.utils.decorators import method_decorator
+from django.views import View
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+from asgiref.sync import async_to_sync
+import logging
 import json
 from django.http import JsonResponse
+
+logger = logging.getLogger(__name__)
 
 # Define a shared thread pool at the module level to avoid the overhead of spawning/destroying threads per request.
 # 16 workers is a sensible default for I/O-bound security scanner API requests.
@@ -73,27 +76,34 @@ class HealthCheckView(APIView):
     def get(self, request):
         return Response({"status": "ok", "service": "ShieldAI PhishGuard"})
 
-
-class TelegramWebhookView(APIView):
+@method_decorator(csrf_exempt, name='dispatch')
+class TelegramWebhookView(View):
     def post(self, request):
         try:
-            import asyncio
             from .telegram_bot import get_telegram_app
             from telegram import Update
+            import json
 
-            app = get_telegram_app()
-            if not app:
-                return JsonResponse({"error": "Bot not configured"}, status=500)
+            # Parse request data
+            try:
+                data = json.loads(request.body.decode("utf-8"))
+            except ValueError:
+                return JsonResponse({"status": "error", "message": "Invalid JSON"}, status=400)
 
-            update = Update.de_json(
-                json.loads(request.body.decode("utf-8")), app.bot
-            )
+            async def process():
+                app = await get_telegram_app()
+                if not app:
+                    raise ValueError("Telegram Bot Token is not configured.")
+                
+                update = Update.de_json(data, app.bot)
+                await app.process_update(update)
 
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            loop.run_until_complete(app.process_update(update))
-            loop.close()
+            # Execute the coroutine in Django's event loop
+            async_to_sync(process)()
 
             return JsonResponse({"status": "ok"})
+
         except Exception as e:
-            return JsonResponse({"error": str(e)}, status=500)
+            logger.exception("Error processing telegram webhook update")
+            # Return 200 to Telegram to avoid retries, but indicate failure status
+            return JsonResponse({"status": "error", "message": str(e)}, status=200)
