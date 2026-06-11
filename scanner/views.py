@@ -78,7 +78,7 @@ class TelegramWebhookView(APIView):
     def post(self, request):
         try:
             import asyncio
-            from .telegram_bot import get_telegram_app
+            from  scanner.services.telegram_bot import get_telegram_app
             from telegram import Update
 
             app = get_telegram_app()
