@@ -7,7 +7,7 @@ from .services.url_analyser import analyse_url
 from .services.virustotal import check_virustotal
 from .services.whois_check import check_domain_age
 from .services.safe_browsing import check_safe_browsing
-from .services.gemini_analyser import analyse_with_gemini
+from .services.gemini_analyser import analyse_with_gemini, analyse_email_with_gemini
 from .services.scorer import calculate_risk
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -107,3 +107,16 @@ class TelegramWebhookView(View):
             logger.exception("Error processing telegram webhook update")
             # Return 200 to Telegram to avoid retries, but indicate failure status
             return JsonResponse({"status": "error", "message": str(e)}, status=200)
+
+
+class AnalyseEmailView(APIView):
+    def post(self, request):
+        email_content = request.data.get("email_content", "").strip()
+        if not email_content:
+            return Response(
+                {"error": "No email content provided."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        result = analyse_email_with_gemini(email_content)
+        return Response(result, status=status.HTTP_200_OK)

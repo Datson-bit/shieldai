@@ -1,0 +1,1598 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ShieldAI — One Platform. Three Channels. Complete Fraud Protection.</title>
+    <link rel="icon" type="image/png" href="/static/phishguard/logo.png" />
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              darkspace: "#06080F",
+              surface: "rgba(10, 15, 30, 0.75)",
+              bordercolor: "rgba(255, 255, 255, 0.08)",
+              tealaccent: "#0D9488",
+              cyanaccent: "#06B6D4",
+            },
+            fontFamily: {
+              sans: ["Outfit", "system-ui", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+
+    <!-- Google Fonts - Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+      body {
+        background-color: #06080f;
+        font-family: "Outfit", sans-serif;
+        overflow-x: hidden;
+      }
+
+      /* Scroll Reveal Animations */
+      .scroll-reveal {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .scroll-reveal.active {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .scroll-reveal-left {
+        opacity: 0;
+        transform: translateX(-40px);
+        transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .scroll-reveal-left.active {
+        opacity: 1;
+        transform: translateX(0);
+      }
+
+      .scroll-reveal-right {
+        opacity: 0;
+        transform: translateX(40px);
+        transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .scroll-reveal-right.active {
+        opacity: 1;
+        transform: translateX(0);
+      }
+
+      /* Custom scrollbar */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #06080f;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #1e293b;
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #0d9488;
+      }
+
+      /* Glassmorphism panel */
+      .glass-panel {
+        background: rgba(10, 15, 30, 0.65);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      /* Glow Overlays */
+      .glow-teal {
+        box-shadow: 0 0 50px rgba(13, 148, 136, 0.18);
+        border: 1px solid rgba(13, 148, 136, 0.3);
+      }
+      .glow-red {
+        box-shadow: 0 0 50px rgba(239, 68, 68, 0.2);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+      }
+      .glow-amber {
+        box-shadow: 0 0 50px rgba(245, 158, 11, 0.2);
+        border: 1px solid rgba(245, 158, 11, 0.3);
+      }
+      .glow-green {
+        box-shadow: 0 0 50px rgba(16, 185, 129, 0.2);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+      }
+
+      /* Custom animations */
+      .spinner {
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+
+      /* Video overlay mask */
+      .video-mask {
+        mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%);
+        -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%);
+      }
+    </style>
+  </head>
+  <body class="text-gray-200 min-h-screen relative">
+    
+    <!-- Ambient global radial glows -->
+    <div class="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-tealaccent/5 blur-[160px] pointer-events-none"></div>
+    <div class="absolute top-[30%] right-[-10%] w-[50%] h-[50%] rounded-full bg-cyanaccent/5 blur-[160px] pointer-events-none"></div>
+    <div class="absolute top-[60%] left-[-10%] w-[50%] h-[50%] rounded-full bg-tealaccent/5 blur-[160px] pointer-events-none"></div>
+
+    <!-- Navigation Header -->
+    <nav class="sticky top-0 z-50 border-b border-white/5 px-6 py-4 backdrop-blur-md bg-darkspace/70">
+      <div class="max-w-7xl mx-auto flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl overflow-hidden shadow-lg shadow-tealaccent/10 border border-white/10 flex items-center justify-center bg-[#0d1421]">
+            <img src="/static/phishguard/logo.png" alt="ShieldAI Logo" class="w-full h-full object-cover" />
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-white font-bold text-lg tracking-tight">ShieldAI</span>
+              <span class="text-[9px] text-tealaccent font-bold bg-tealaccent/10 border border-tealaccent/20 px-2 py-0.5 rounded-full uppercase tracking-wider">SECURE</span>
+            </div>
+            <span class="text-gray-500 text-[10px]">by CipherLabs</span>
+          </div>
+        </div>
+        
+        <!-- Navigation Links -->
+        <div class="hidden md:flex items-center gap-8 text-sm font-medium text-gray-400">
+          <a href="#problem" class="hover:text-white transition-colors">The Crisis</a>
+          <a href="#solution" class="hover:text-white transition-colors">Our Solution</a>
+          <a href="#sandbox" class="text-tealaccent hover:underline transition-colors flex items-center gap-1">
+            <i data-lucide="terminal" class="w-4 h-4"></i> Live Sandbox
+          </a>
+          <a href="#behavior-deepdive" class="hover:text-white transition-colors">BehaviorID™</a>
+          <a href="#nigeria-pledge" class="hover:text-white transition-colors">Built for Nigeria</a>
+          <a href="#pricing" class="hover:text-white transition-colors">Fintech APIs</a>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <button onclick="toggleHistoryModal(true)" class="bg-white/5 border border-white/10 text-gray-300 hover:text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5">
+            <i data-lucide="history" class="w-3.5 h-3.5"></i>
+            <span>Scan History</span>
+          </button>
+          <a href="#sandbox" class="bg-gradient-to-r from-tealaccent to-cyanaccent hover:brightness-110 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-lg shadow-tealaccent/20">
+            Scan Now
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- SECTION 1: Cinematic Full-Screen Hero Section -->
+    <header class="relative min-h-[92vh] flex items-center justify-center overflow-hidden py-16 px-6">
+      <!-- Muted looping background video -->
+      <div class="absolute inset-0 z-0 opacity-25 pointer-events-none video-mask">
+        <video autoplay muted loop playsinline class="w-full h-full object-cover">
+          <source src="https://player.vimeo.com/external/371433846.sd.mp4?s=236da2f3c025fcfccfce390d0658a5b8e19e2c60&profile_id=139&oauth2_token_id=57447761" type="video/mp4" />
+        </video>
+      </div>
+      <div class="absolute inset-0 bg-[#06080F]/80 z-0"></div>
+
+      <div class="relative z-10 max-w-5xl mx-auto text-center">
+        <div class="inline-flex items-center gap-2 bg-[#0d1421] border border-tealaccent/30 text-[10px] font-extrabold tracking-widest text-tealaccent px-4 py-1.5 rounded-full mb-8 uppercase animate-pulse">
+          ⚡ OPay Innovation Challenge 2026 Submission
+        </div>
+        
+        <h1 class="text-5xl sm:text-7xl font-extrabold text-white tracking-tight leading-none mb-6">
+          One Platform. Three Channels.<br />
+          <span class="bg-gradient-to-r from-teal-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">
+            Complete Fraud Protection.
+          </span>
+        </h1>
+        
+        <p class="text-xl sm:text-2xl font-light text-tealaccent mb-6 uppercase tracking-widest">
+          Detect. Authenticate. Defend.
+        </p>
+
+        <p class="text-gray-400 text-base sm:text-lg max-w-2xl mx-auto font-light leading-relaxed mb-10">
+          In Nigeria, financial fraud strikes in seconds. ShieldAI provides real-time URL intelligence, advanced behavioral analysis, and automated threat scores to stop cyberattacks before they claim your next Naira.
+        </p>
+
+        <!-- Dynamic Stat Indicator in Hero -->
+        <div class="bg-red-500/10 border border-red-500/20 max-w-md mx-auto rounded-2xl p-4 mb-10 flex items-center gap-4 text-left">
+          <div class="p-3 bg-red-500/20 text-red-400 rounded-xl">
+            <i data-lucide="trending-up" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <h4 class="text-white text-sm font-bold">Nigeria's Escalating Crisis</h4>
+            <p class="text-red-400 text-xs mt-0.5">Over <strong>₦28 Billion</strong> lost to financial and social engineering fraud in one year.</p>
+          </div>
+        </div>
+
+        <!-- Action CTAs -->
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <a href="#sandbox" class="w-full sm:w-auto bg-gradient-to-r from-tealaccent to-cyanaccent hover:brightness-110 active:scale-95 text-white font-bold px-8 py-4 rounded-xl shadow-lg shadow-tealaccent/35 transition-all text-center flex items-center justify-center gap-2">
+            <i data-lucide="shield-alert" class="w-5 h-5"></i>
+            <span>Scan a Link & Email</span>
+          </a>
+          <a href="https://wa.me/mocknumber" target="_blank" class="w-full sm:w-auto bg-[#141925] border border-white/10 hover:border-tealaccent/40 text-white font-semibold px-8 py-4 rounded-xl transition-all text-center flex items-center justify-center gap-2">
+            <i data-lucide="message-square" class="w-5 h-5 text-emerald-400"></i>
+            <span>Try on WhatsApp Bot</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Scroll down hint -->
+      <div class="absolute bottom-6 left-1/2 -translate-x-1/2 text-gray-500 text-xs animate-bounce flex flex-col items-center gap-1 z-10">
+        <span>Scroll to Explore</span>
+        <i data-lucide="chevron-down" class="w-4 h-4 text-tealaccent"></i>
+      </div>
+    </header>
+
+    <!-- SECTION 2: The Problem -->
+    <section id="problem" class="relative py-28 px-6 border-t border-white/5 bg-[#06080F]/90">
+      <!-- Muted looping background video -->
+      <div class="absolute inset-0 z-0 opacity-10 pointer-events-none">
+        <video autoplay muted loop playsinline class="w-full h-full object-cover">
+          <source src="https://player.vimeo.com/external/403759902.sd.mp4?s=d00db6b2e3f0da594344d32049e0c5cff1c5d012&profile_id=139&oauth2_token_id=57447761" type="video/mp4" />
+        </video>
+      </div>
+
+      <div class="relative z-10 max-w-7xl mx-auto">
+        <div class="text-center mb-16 scroll-reveal">
+          <span class="text-red-400 text-xs font-bold uppercase tracking-widest bg-red-400/10 px-3 py-1 rounded-full border border-red-500/10">The Threat Landscape</span>
+          <h2 class="text-3xl sm:text-5xl font-extrabold text-white mt-4 tracking-tight">Nigeria's Growing Fraud Crisis</h2>
+          <p class="text-gray-400 font-light mt-3 max-w-2xl mx-auto">Social engineering tactics are bypasses for traditional security locks. Here is the reality of Nigeria's digital ecosystem.</p>
+        </div>
+
+        <!-- Three Statistics Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
+          <div class="glass-panel p-8 rounded-2xl border border-red-500/10 hover:border-red-500/25 transition-all duration-300 scroll-reveal">
+            <h3 class="text-red-400 font-extrabold text-5xl mb-2">₦28B+</h3>
+            <h4 class="text-white font-bold text-lg mb-1">Lost Annually</h4>
+            <p class="text-gray-400 text-sm font-light leading-relaxed">Reported losses by financial platforms, heavily driven by phishing campaigns targeting everyday savers.</p>
+          </div>
+
+          <div class="glass-panel p-8 rounded-2xl border-white/5 hover:border-red-500/20 transition-all duration-300 scroll-reveal">
+            <h3 class="text-red-400 font-extrabold text-5xl mb-2">85%</h3>
+            <h4 class="text-white font-bold text-lg mb-1">Social Engineering Origin</h4>
+            <p class="text-gray-400 text-sm font-light leading-relaxed">Over four-fifths of all successful account takeovers begin with fake SMS alerts, fraudulent customer care calls, or cloned links.</p>
+          </div>
+
+          <div class="glass-panel p-8 rounded-2xl border border-red-500/10 hover:border-red-500/25 transition-all duration-300 scroll-reveal">
+            <h3 class="text-red-400 font-extrabold text-5xl mb-2">15 Sec</h3>
+            <h4 class="text-white font-bold text-lg mb-1">Harvesting To Drain</h4>
+            <p class="text-gray-400 text-sm font-light leading-relaxed">The average time it takes automated fraud bots to sweep account funds once credentials are logged on a cloned interface.</p>
+          </div>
+        </div>
+
+        <!-- The Two-Step Attack Diagram & Copy -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div class="scroll-reveal-left">
+            <h3 class="text-white font-extrabold text-2xl sm:text-3xl mb-4 leading-tight">
+              The Two-Step Attack Pattern
+            </h3>
+            <p class="text-gray-400 text-sm sm:text-base font-light leading-relaxed mb-6">
+              Fraudsters rarely hack databases anymore. Instead, they exploit the human element. They impersonate trusted agencies to get inside wallets.
+            </p>
+            <blockquote class="border-l-2 border-red-500 pl-4 py-1.5 bg-red-500/5 text-gray-300 text-xs italic mb-6 leading-relaxed">
+              "My phone buzzed with a message that GTBank was blocking my account. I clicked. I typed my OTP. In less than 1 minute, the savings I raised for my daughter's school fees were gone."
+            </blockquote>
+            <p class="text-gray-400 text-sm font-light leading-relaxed">
+              Judges and security officers must realize the speed and emotional urgency of these threats. ShieldAI intercepts at step one (recognizing the threat link) and invalidates step two (monitoring biometric access profiles).
+            </p>
+          </div>
+
+          <!-- Interactive Diagram Mockup -->
+          <div class="scroll-reveal-right glass-panel rounded-2xl p-6 border border-white/10 relative overflow-hidden">
+            <div class="absolute top-2 right-2 flex gap-1">
+              <span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-yellow-500"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-green-500"></span>
+            </div>
+            
+            <h4 class="text-xs text-gray-500 uppercase tracking-wider mb-6 font-bold flex items-center gap-1.5">
+              <i data-lucide="git-branch" class="w-4 h-4 text-red-400"></i> Attack Vector Progression
+            </h4>
+
+            <div class="flex flex-col gap-6 relative">
+              <!-- Step 1 -->
+              <div class="flex items-start gap-4 p-4 bg-red-500/5 border border-red-500/10 rounded-xl relative">
+                <span class="bg-red-500/20 text-red-400 text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center shrink-0">1</span>
+                <div>
+                  <h5 class="text-white text-sm font-bold">Step 1: The Phishing Lure</h5>
+                  <p class="text-gray-400 text-xs mt-1 font-light leading-relaxed">Victim receives fake link (SMS/WhatsApp) spoofing GTBank or OPay claiming account restriction.</p>
+                </div>
+              </div>
+
+              <!-- Animated Connecting arrow -->
+              <div class="flex justify-center -my-2">
+                <i data-lucide="chevron-down" class="w-6 h-6 text-red-400 animate-bounce"></i>
+              </div>
+
+              <!-- Step 2 -->
+              <div class="flex items-start gap-4 p-4 bg-red-900/10 border border-red-500/20 rounded-xl relative">
+                <span class="bg-red-500/30 text-red-400 text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center shrink-0">2</span>
+                <div>
+                  <h5 class="text-white text-sm font-bold">Step 2: Account Takeover</h5>
+                  <p class="text-gray-400 text-xs mt-1 font-light leading-relaxed">Credentials/OTP entered on clone page. Automated script logs in to real platform, sweeps funds.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: Our Solution — Two Layers -->
+    <section id="solution" class="py-28 px-6 bg-[#090d18] border-t border-white/5">
+      <div class="max-w-7xl mx-auto">
+        
+        <div class="text-center mb-16 scroll-reveal">
+          <span class="text-tealaccent text-xs font-bold uppercase tracking-widest bg-tealaccent/10 px-3 py-1 rounded-full border border-tealaccent/10">Double Layer Defense</span>
+          <h2 class="text-3xl sm:text-5xl font-extrabold text-white mt-4 tracking-tight">Our Solution: ThreatScan + BehaviorID</h2>
+          <p class="text-gray-400 font-light mt-3 max-w-2xl mx-auto">ShieldAI combines reputation lookups with modern biometric intelligence to cover threats before and during user activity.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-20">
+          <!-- Layer 1 Card -->
+          <div class="glass-panel rounded-3xl p-8 hover:border-tealaccent/30 transition-all duration-300 flex flex-col justify-between scroll-reveal-left relative overflow-hidden">
+            <div class="absolute -right-16 -top-16 w-40 h-40 rounded-full bg-tealaccent/10 blur-[50px] pointer-events-none"></div>
+            <div>
+              <div class="w-14 h-14 rounded-2xl bg-tealaccent/10 border border-tealaccent/20 flex items-center justify-center text-tealaccent mb-6">
+                <i data-lucide="scan-eye" class="w-7 h-7"></i>
+              </div>
+              <span class="text-[10px] text-tealaccent font-bold uppercase tracking-wider">Layer 1: External Defense</span>
+              <h3 class="text-white font-extrabold text-2xl mt-2 mb-4">ThreatScan Engine</h3>
+              <p class="text-gray-400 text-sm font-light leading-relaxed mb-6">
+                Scans public lists, computes domain age, assesses domain structures, and parses landing pages using Gemini AI cognitive models to detect phishing attempts, bank clones, or government identity spoofing immediately.
+              </p>
+            </div>
+            
+            <!-- Mockup Verdict UI -->
+            <div class="bg-red-500/10 border border-red-500/20 rounded-2xl p-4 mt-6">
+              <div class="flex items-center gap-3">
+                <div class="p-2 bg-red-500/20 text-red-400 rounded-xl">
+                  <i data-lucide="alert-octagon" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <h4 class="text-xs uppercase text-red-400 font-bold tracking-widest">VERDICT: DANGEROUS</h4>
+                  <p class="text-white text-xs font-semibold">Impersonates OPay Nigeria (Score: 92/100)</p>
+                </div>
+              </div>
+              <p class="text-gray-400 text-[10px] mt-2 font-light">"This page cloned the OPay login banner to scrape transaction credentials. Do not type any details."</p>
+            </div>
+          </div>
+
+          <!-- Layer 2 Card -->
+          <div class="glass-panel rounded-3xl p-8 hover:border-cyanaccent/30 transition-all duration-300 flex flex-col justify-between scroll-reveal-right relative overflow-hidden">
+            <div class="absolute -right-16 -top-16 w-40 h-40 rounded-full bg-cyanaccent/10 blur-[50px] pointer-events-none"></div>
+            <div>
+              <div class="w-14 h-14 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 mb-6">
+                <i data-lucide="fingerprint" class="w-7 h-7"></i>
+              </div>
+              <span class="text-[10px] text-cyan-400 font-bold uppercase tracking-wider">Layer 2: Internal Defense</span>
+              <h3 class="text-white font-extrabold text-2xl mt-2 mb-4">BehaviorID™ Biometrics</h3>
+              <p class="text-gray-400 text-sm font-light leading-relaxed mb-6">
+                The invisible biometric fingerprint. By processing micro-second typing rhythms, scroll patterns, screen pressure, and hand movement angles, ShieldAI verifies that the operator is the legitimate user—not a threat actor.
+              </p>
+            </div>
+
+            <!-- Telemetry Indicator Mockup -->
+            <div class="bg-cyan-500/10 border border-cyan-500/20 rounded-2xl p-4 mt-6">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="p-2 bg-cyan-500/20 text-cyan-400 rounded-xl">
+                    <i data-lucide="activity" class="w-5 h-5 animate-pulse"></i>
+                  </div>
+                  <div>
+                    <h4 class="text-xs uppercase text-cyan-400 font-bold tracking-widest">Telemetry Monitor</h4>
+                    <p class="text-white text-xs font-semibold">Anomaly detected in typing cadence</p>
+                  </div>
+                </div>
+                <span class="text-[9px] bg-red-500/20 text-red-400 border border-red-500/30 px-2 py-0.5 rounded uppercase tracking-wider font-bold">Unauthorised</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Side-by-Side Comparison -->
+        <div class="glass-panel rounded-3xl p-8 border-white/5 scroll-reveal">
+          <h3 class="text-white font-extrabold text-2xl text-center mb-8">Without ShieldAI vs. With ShieldAI</h3>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8 divide-y md:divide-y-0 md:divide-x divide-white/5">
+            <!-- Without ShieldAI -->
+            <div class="pb-6 md:pb-0 md:pr-8">
+              <h4 class="text-red-400 font-bold text-lg mb-4 flex items-center gap-2">
+                <i data-lucide="x-circle" class="w-5 h-5"></i> Without ShieldAI
+              </h4>
+              <ul class="space-y-3.5 text-sm font-light text-gray-400">
+                <li class="flex items-start gap-2.5">
+                  <i data-lucide="minus" class="w-4 h-4 text-red-400 shrink-0 mt-0.5"></i>
+                  <span>Users browse cloned websites without visual indicators or alerts.</span>
+                </li>
+                <li class="flex items-start gap-2.5">
+                  <i data-lucide="minus" class="w-4 h-4 text-red-400 shrink-0 mt-0.5"></i>
+                  <span>Credentials are entered into malicious fields without backend warning layers.</span>
+                </li>
+                <li class="flex items-start gap-2.5">
+                  <i data-lucide="minus" class="w-4 h-4 text-red-400 shrink-0 mt-0.5"></i>
+                  <span>Funds are drained immediately from digital accounts.</span>
+                </li>
+              </ul>
+            </div>
+
+            <!-- With ShieldAI -->
+            <div class="pt-6 md:pt-0 md:pl-8">
+              <h4 class="text-emerald-400 font-bold text-lg mb-4 flex items-center gap-2">
+                <i data-lucide="check-circle" class="w-5 h-5"></i> With ShieldAI Protection
+              </h4>
+              <ul class="space-y-3.5 text-sm font-light text-gray-400">
+                <li class="flex items-start gap-2.5">
+                  <i data-lucide="plus" class="w-4 h-4 text-emerald-400 shrink-0 mt-0.5"></i>
+                  <span>ThreatScan captures malicious links, printing high-alert risk scores.</span>
+                </li>
+                <li class="flex items-start gap-2.5">
+                  <i data-lucide="plus" class="w-4 h-4 text-emerald-400 shrink-0 mt-0.5"></i>
+                  <span>Live email scanners reveal urgency tags and sender spoofing indicators.</span>
+                </li>
+                <li class="flex items-start gap-2.5">
+                  <i data-lucide="plus" class="w-4 h-4 text-emerald-400 shrink-0 mt-0.5"></i>
+                  <span>BehaviorID rejects robotic scripts or foreign typing signatures, stopping takeover attempts.</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION 4: Three Ways to Use ShieldAI -->
+    <section class="py-28 px-6 bg-[#06080F]">
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-16 scroll-reveal">
+          <span class="text-tealaccent text-xs font-bold uppercase tracking-widest bg-tealaccent/10 px-3 py-1 rounded-full border border-tealaccent/10">Integrations</span>
+          <h2 class="text-3xl sm:text-5xl font-extrabold text-white mt-4 tracking-tight">Three Channels of Protection</h2>
+          <p class="text-gray-400 font-light mt-3 max-w-2xl mx-auto">Access ShieldAI security intelligence wherever you are. One security backend served across three functional interfaces.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <!-- Web Sandbox -->
+          <div class="glass-panel p-6 rounded-2xl border-white/5 hover:border-tealaccent/30 transition-all duration-300 scroll-reveal flex flex-col justify-between">
+            <div>
+              <div class="w-12 h-12 bg-tealaccent/10 border border-tealaccent/20 rounded-xl flex items-center justify-center text-tealaccent mb-5">
+                <i data-lucide="chrome" class="w-6 h-6"></i>
+              </div>
+              <h3 class="text-white font-bold text-lg mb-2">Web Application</h3>
+              <p class="text-gray-400 text-xs font-light leading-relaxed">Paste URLs or email transcripts directly into the ShieldAI console sandbox for instant evaluation reports.</p>
+            </div>
+            <a href="#sandbox" class="text-tealaccent hover:underline text-xs font-bold mt-6 inline-flex items-center gap-1.5">
+              Try Sandbox <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+            </a>
+          </div>
+
+          <!-- WhatsApp Bot -->
+          <div class="glass-panel p-6 rounded-2xl border-white/5 hover:border-tealaccent/30 transition-all duration-300 scroll-reveal flex flex-col justify-between">
+            <div>
+              <div class="w-12 h-12 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex items-center justify-center text-emerald-400 mb-5">
+                <i data-lucide="phone-call" class="w-6 h-6"></i>
+              </div>
+              <h3 class="text-white font-bold text-lg mb-2">WhatsApp Bot</h3>
+              <p class="text-gray-400 text-xs font-light leading-relaxed">Forward message content and link texts directly to our automated chatbot. Keep phishing checks inside your conversations.</p>
+            </div>
+            <a href="https://wa.me/mocknumber" target="_blank" class="text-emerald-400 hover:underline text-xs font-bold mt-6 inline-flex items-center gap-1.5">
+              Message Bot <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+            </a>
+          </div>
+
+          <!-- Telegram Bot -->
+          <div class="glass-panel p-6 rounded-2xl border-white/5 hover:border-tealaccent/30 transition-all duration-300 scroll-reveal flex flex-col justify-between">
+            <div>
+              <div class="w-12 h-12 bg-sky-500/10 border border-sky-500/20 rounded-xl flex items-center justify-center text-sky-400 mb-5">
+                <i data-lucide="send" class="w-6 h-6"></i>
+              </div>
+              <h3 class="text-white font-bold text-lg mb-2">Telegram Bot</h3>
+              <p class="text-gray-400 text-xs font-light leading-relaxed">Add ShieldAI Bot to chats. Check web domain links without exiting your messenger feeds.</p>
+            </div>
+            <a href="https://t.me/shieldai_bot" target="_blank" class="text-sky-400 hover:underline text-xs font-bold mt-6 inline-flex items-center gap-1.5">
+              Add Telegram <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+            </a>
+          </div>
+
+          <!-- Email Analyser -->
+          <div class="glass-panel p-6 rounded-2xl border-white/5 hover:border-tealaccent/30 transition-all duration-300 scroll-reveal flex flex-col justify-between">
+            <div>
+              <div class="w-12 h-12 bg-cyan-500/10 border border-cyan-500/20 rounded-xl flex items-center justify-center text-cyan-400 mb-5">
+                <i data-lucide="mail-search" class="w-6 h-6"></i>
+              </div>
+              <h3 class="text-white font-bold text-lg mb-2">Email Analyser</h3>
+              <p class="text-gray-400 text-xs font-light leading-relaxed">Analyse full email layouts, urgency cues, links, and addresses via Gemini-powered analysis models.</p>
+            </div>
+            <a href="#sandbox" class="text-cyan-400 hover:underline text-xs font-bold mt-6 inline-flex items-center gap-1.5">
+              Open Scanner <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5 (incorporating original Scanner): Live Sandbox (URL + Email Analyser) -->
+    <section id="sandbox" class="py-28 px-6 bg-[#090d18] border-t border-white/5 relative">
+      <div class="max-w-4xl mx-auto relative z-10">
+        
+        <div class="text-center mb-10 scroll-reveal">
+          <span class="text-tealaccent text-xs font-bold uppercase tracking-widest bg-tealaccent/10 px-4 py-1.5 rounded-full border border-tealaccent/20">ShieldAI Live Sandbox</span>
+          <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-4 tracking-tight">Evaluate Threats in Real-Time</h2>
+          <p class="text-gray-400 text-sm font-light mt-3 max-w-xl mx-auto">Paste a suspicious URL or a full raw email to compute threat scores and trigger safety evaluations.</p>
+        </div>
+
+        <!-- Sandbox Tabs -->
+        <div class="flex justify-center mb-8 scroll-reveal">
+          <div class="bg-black/40 p-1.5 rounded-2xl border border-white/10 flex gap-2">
+            <button onclick="switchSandboxTab('url')" id="tabBtn-url" class="px-6 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center gap-2 bg-tealaccent text-white">
+              <i data-lucide="link" class="w-4 h-4"></i> Scan a Link
+            </button>
+            <button onclick="switchSandboxTab('email')" id="tabBtn-email" class="px-6 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center gap-2 text-gray-400 hover:text-white">
+              <i data-lucide="mail" class="w-4 h-4"></i> Analyse an Email
+            </button>
+          </div>
+        </div>
+
+        <!-- URL Scanner Panel -->
+        <div id="sandbox-url-panel" class="scroll-reveal">
+          <div class="glass-panel rounded-2xl p-6 sm:p-8 border border-white/5 shadow-2xl">
+            <div class="flex flex-col sm:flex-row gap-3">
+              <div class="relative flex-1">
+                <i data-lucide="link" class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 w-5 h-5"></i>
+                <input
+                  id="urlInput"
+                  type="text"
+                  placeholder="Paste a suspicious URL here (e.g. https://opay-nigeria-secure.com)..."
+                  class="w-full bg-[#0d101d]/90 border border-white/10 rounded-xl pl-12 pr-12 py-4 text-white placeholder-gray-500 text-sm focus:outline-none focus:border-tealaccent/50 focus:ring-4 focus:ring-tealaccent/10 transition-all"
+                  onkeydown="if (event.key === 'Enter') scanLink();"
+                />
+                <button
+                  onclick="pasteFromClipboard('urlInput')"
+                  class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-colors"
+                  title="Paste from clipboard"
+                >
+                  <i data-lucide="clipboard-list" class="w-5 h-5"></i>
+                </button>
+              </div>
+              <button
+                id="scanBtn"
+                onclick="scanLink()"
+                class="bg-gradient-to-r from-tealaccent to-cyanaccent hover:brightness-110 active:scale-[0.98] text-white font-semibold px-8 py-4 rounded-xl shadow-lg shadow-tealaccent/20 transition-all flex items-center justify-center gap-2"
+              >
+                <i data-lucide="search" id="btnIcon" class="w-4.5 h-4.5"></i>
+                <span id="btnText">Scan Link</span>
+                <i data-lucide="chevron-right" class="w-4 h-4 ml-1"></i>
+              </button>
+            </div>
+            <p class="text-gray-500 text-[10px] mt-4 text-center flex items-center justify-center gap-1.5">
+              <i data-lucide="lock" class="w-3.5 h-3.5"></i>
+              Free public lookups. Live checks include VirusTotal, Google Safe Browsing, and Gemini AI.
+            </p>
+          </div>
+        </div>
+
+        <!-- Email Scanner Panel (Live Feature) -->
+        <div id="sandbox-email-panel" class="hidden scroll-reveal">
+          <div class="glass-panel rounded-2xl p-6 sm:p-8 border border-white/5 shadow-2xl">
+            <div class="flex flex-col gap-4">
+              <div class="relative">
+                <textarea
+                  id="emailInput"
+                  rows="6"
+                  placeholder="Paste the full raw email content here... (e.g. 'DEAR CUSTOMER, YOUR ACCOUNT IS RESTRICTED...')"
+                  class="w-full bg-[#0d101d]/90 border border-white/10 rounded-xl p-4 text-white placeholder-gray-500 text-sm focus:outline-none focus:border-tealaccent/50 focus:ring-4 focus:ring-tealaccent/10 transition-all font-light"
+                ></textarea>
+                <button
+                  onclick="pasteFromClipboard('emailInput')"
+                  class="absolute right-4 bottom-4 text-gray-500 hover:text-white transition-colors"
+                  title="Paste from clipboard"
+                >
+                  <i data-lucide="clipboard-list" class="w-5 h-5"></i>
+                </button>
+              </div>
+              <button
+                id="analyseEmailBtn"
+                onclick="analyseEmail()"
+                class="bg-gradient-to-r from-tealaccent to-cyanaccent hover:brightness-110 active:scale-[0.98] text-white font-semibold px-8 py-4 rounded-xl shadow-lg shadow-tealaccent/20 transition-all flex items-center justify-center gap-2"
+              >
+                <i data-lucide="sparkles" id="emailBtnIcon" class="w-4.5 h-4.5"></i>
+                <span id="emailBtnText">Analyse Email with Gemini</span>
+                <i data-lucide="chevron-right" class="w-4 h-4 ml-1"></i>
+              </button>
+            </div>
+            <p class="text-gray-500 text-[10px] mt-4 text-center flex items-center justify-center gap-1.5">
+              <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+              Parses urgency cues, sender spoofing syntax, and text structures for phishing.
+            </p>
+          </div>
+        </div>
+
+        <!-- Unified Result Container -->
+        <div id="resultCard" class="hidden mt-8 scroll-reveal"></div>
+
+      </div>
+    </section>
+
+    <!-- SECTION 6: How It Works -->
+    <section id="how-it-works" class="py-28 px-6 bg-[#06080F] border-t border-white/5">
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-16 scroll-reveal">
+          <span class="text-tealaccent text-xs font-bold uppercase tracking-widest bg-tealaccent/10 px-3 py-1 rounded-full border border-tealaccent/10">3-Step Guard</span>
+          <h2 class="text-3xl sm:text-5xl font-extrabold text-white mt-4 tracking-tight">How ShieldAI Protects You</h2>
+          <p class="text-gray-400 font-light mt-3 max-w-2xl mx-auto">Simple interactions on the surface, powered by deep security layers underneath.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+          <!-- Step 1 -->
+          <div class="glass-panel rounded-2xl p-8 border border-white/5 relative hover:border-tealaccent/20 transition-all duration-300 scroll-reveal">
+            <span class="absolute -top-3.5 -left-3.5 w-8 h-8 rounded-full bg-tealaccent text-darkspace flex items-center justify-center font-extrabold text-xs shadow-md">1</span>
+            <div class="w-12 h-12 rounded-full bg-tealaccent/10 flex items-center justify-center text-tealaccent mb-5 mx-auto">
+              <i data-lucide="clipboard" class="w-6 h-6"></i>
+            </div>
+            <h3 class="text-white font-bold text-center text-base mb-2">Paste Threat Intel</h3>
+            <p class="text-gray-400 text-center text-xs leading-relaxed font-light">
+              Submit a suspected domain link or paste a complete email text block.
+            </p>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="glass-panel rounded-2xl p-8 border border-white/5 relative hover:border-tealaccent/20 transition-all duration-300 scroll-reveal">
+            <span class="absolute -top-3.5 -left-3.5 w-8 h-8 rounded-full bg-tealaccent text-darkspace flex items-center justify-center font-extrabold text-xs shadow-md">2</span>
+            <div class="w-12 h-12 rounded-full bg-cyan-500/10 flex items-center justify-center text-cyan-400 mb-5 mx-auto">
+              <i data-lucide="cpu" class="w-6 h-6"></i>
+            </div>
+            <h3 class="text-white font-bold text-center text-base mb-2">AI Analyzes Content</h3>
+            <p class="text-gray-400 text-center text-xs leading-relaxed font-light">
+              ShieldAI triggers API scans, parses text syntax, and runs Gemini evaluation models.
+            </p>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="glass-panel rounded-2xl p-8 border border-white/5 relative hover:border-tealaccent/20 transition-all duration-300 scroll-reveal">
+            <span class="absolute -top-3.5 -left-3.5 w-8 h-8 rounded-full bg-tealaccent text-darkspace flex items-center justify-center font-extrabold text-xs shadow-md">3</span>
+            <div class="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-400 mb-5 mx-auto">
+              <i data-lucide="check-circle" class="w-6 h-6"></i>
+            </div>
+            <h3 class="text-white font-bold text-center text-base mb-2">Get Safety Verdict</h3>
+            <p class="text-gray-400 text-center text-xs leading-relaxed font-light">
+              Receive a safety score alongside detailed flags indicating why a resource is blocked.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 7: BehaviorID Deep Dive with Interactive Telemetry Playground -->
+    <section id="behavior-deepdive" class="py-28 px-6 bg-[#090d18] border-t border-white/5 relative overflow-hidden">
+      <!-- Muted looping background video -->
+      <div class="absolute inset-0 z-0 opacity-10 pointer-events-none">
+        <video autoplay muted loop playsinline class="w-full h-full object-cover">
+          <source src="https://player.vimeo.com/external/371433846.sd.mp4?s=236da2f3c025fcfccfce390d0658a5b8e19e2c60&profile_id=139&oauth2_token_id=57447761" type="video/mp4" />
+        </video>
+      </div>
+
+      <div class="relative z-10 max-w-7xl mx-auto">
+        <div class="text-center mb-16 scroll-reveal">
+          <span class="text-cyanaccent text-xs font-bold uppercase tracking-widest bg-cyanaccent/10 px-3 py-1 rounded-full border border-cyanaccent/10">Next-Gen Identity Verification</span>
+          <h2 class="text-3xl sm:text-5xl font-extrabold text-white mt-4 tracking-tight">BehaviorID™ Deep Dive</h2>
+          <p class="text-tealaccent text-lg font-light mt-3">"Your behavior is your password"</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div class="scroll-reveal-left">
+            <h3 class="text-white font-extrabold text-2xl mb-4 leading-tight">
+              Biometric Telemetry: The Ultimate Protection
+            </h3>
+            <p class="text-gray-400 font-light leading-relaxed mb-6">
+              When a phisher steals login codes, passwords fail. BehaviorID operates invisibly in the background. It measures human kinetics to block automated scripts and anomalous operations, keeping systems secure even if keys are lost.
+            </p>
+
+            <!-- 4 Signals list -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="flex gap-3">
+                <i data-lucide="keyboard" class="w-5 h-5 text-tealaccent shrink-0 mt-0.5"></i>
+                <div>
+                  <h4 class="text-white text-sm font-semibold">Typing Rhythm</h4>
+                  <p class="text-gray-500 text-xs mt-0.5">Measures microsecond latency pauses between individual key strokes.</p>
+                </div>
+              </div>
+
+              <div class="flex gap-3">
+                <i data-lucide="activity" class="w-5 h-5 text-tealaccent shrink-0 mt-0.5"></i>
+                <div>
+                  <h4 class="text-white text-sm font-semibold">Touch Pressure</h4>
+                  <p class="text-gray-500 text-xs mt-0.5">Processes contact size profile signatures on touch devices.</p>
+                </div>
+              </div>
+
+              <div class="flex gap-3">
+                <i data-lucide="mouse-pointer-click" class="w-5 h-5 text-tealaccent shrink-0 mt-0.5"></i>
+                <div>
+                  <h4 class="text-white text-sm font-semibold">Scroll Speed</h4>
+                  <p class="text-gray-500 text-xs mt-0.5">Monitors kinetic swipes and scroll velocity trajectories.</p>
+                </div>
+              </div>
+
+              <div class="flex gap-3">
+                <i data-lucide="smartphone" class="w-5 h-5 text-tealaccent shrink-0 mt-0.5"></i>
+                <div>
+                  <h4 class="text-white text-sm font-semibold">Device Angle</h4>
+                  <p class="text-gray-500 text-xs mt-0.5">Evaluates gyroscope details to ensure human wrist placement.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Interactive Telemetry Demonstration -->
+          <div class="scroll-reveal-right glass-panel rounded-2xl p-6 border border-white/10 relative overflow-hidden">
+            <h4 class="text-xs text-gray-500 uppercase tracking-wider mb-4 font-bold flex items-center gap-1.5">
+              <i data-lucide="terminal" class="w-4 h-4 text-cyanaccent"></i> Live Telemetry Playground
+            </h4>
+            <p class="text-gray-400 text-xs font-light mb-4 leading-relaxed">
+              Type in the box below to see BehaviorID log kinetic variables.
+            </p>
+
+            <textarea
+              id="telemetryArea"
+              rows="3"
+              placeholder="Type your name or a message here..."
+              class="w-full bg-[#0d101d]/90 border border-white/10 rounded-xl p-3 text-white placeholder-gray-500 text-xs font-light focus:outline-none focus:border-cyanaccent/50 focus:ring-2 focus:ring-cyanaccent/10 transition-all mb-4"
+              oninput="updateTelemetryData(event)"
+            ></textarea>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div class="bg-black/30 p-3 rounded-lg border border-white/5">
+                <span class="text-gray-500 text-[10px] uppercase font-bold tracking-widest block">Key Latency</span>
+                <span id="tel-latency" class="text-cyanaccent font-mono font-extrabold text-sm">0 ms</span>
+              </div>
+              <div class="bg-black/30 p-3 rounded-lg border border-white/5">
+                <span class="text-gray-500 text-[10px] uppercase font-bold tracking-widest block">WPM Estimate</span>
+                <span id="tel-wpm" class="text-cyanaccent font-mono font-extrabold text-sm">0 WPM</span>
+              </div>
+              <div class="bg-black/30 p-3 rounded-lg border border-white/5">
+                <span class="text-gray-500 text-[10px] uppercase font-bold tracking-widest block">Keys Pressed</span>
+                <span id="tel-keys" class="text-cyanaccent font-mono font-extrabold text-sm">0</span>
+              </div>
+              <div class="bg-black/30 p-3 rounded-lg border border-white/5">
+                <span class="text-gray-500 text-[10px] uppercase font-bold tracking-widest block">Scroll Speed</span>
+                <span id="tel-scroll" class="text-cyanaccent font-mono font-extrabold text-sm">0 px/s</span>
+              </div>
+            </div>
+
+            <div class="mt-4 p-3 bg-cyanaccent/5 border border-cyanaccent/15 rounded-xl flex items-center justify-between">
+              <span class="text-[10px] text-gray-400 font-light">Biometric Status</span>
+              <span id="tel-status" class="text-[9px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded uppercase tracking-wider flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> Authentic
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 8: Built for Nigeria -->
+    <section id="nigeria-pledge" class="py-28 px-6 bg-[#06080F] border-t border-white/5">
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-16 scroll-reveal">
+          <span class="text-tealaccent text-xs font-bold uppercase tracking-widest bg-tealaccent/10 px-3 py-1 rounded-full border border-tealaccent/10">Local Defense</span>
+          <h2 class="text-3xl sm:text-5xl font-extrabold text-white mt-4 tracking-tight">Built for Nigeria</h2>
+          <p class="text-gray-400 font-light mt-3 max-w-2xl mx-auto">ShieldAI defends Nigerians by addressing targeted impersonation threats across local agencies.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-16">
+          <div class="scroll-reveal-left">
+            <h3 class="text-white font-extrabold text-2xl mb-4 leading-tight">
+              Anti-Impersonation Safeguards
+            </h3>
+            <p class="text-gray-400 text-sm font-light leading-relaxed mb-6">
+              Our engines are fine-tuned to monitor threat templates clone campaigns mimicking **GTBank**, **OPay**, **JAMB**, and **FIRS** portals. We block fake domain extensions immediately.
+            </p>
+
+            <!-- Pidgin vs English Toggle -->
+            <div class="glass-panel p-6 rounded-2xl border-white/5">
+              <div class="flex items-center justify-between mb-4">
+                <h4 class="text-white font-bold text-sm">Example Phishing Templates</h4>
+                <div class="flex bg-black/40 rounded-lg p-1 border border-white/5 text-[10px]">
+                  <button id="lang-en-btn" onclick="toggleLanguageAlert('en')" class="px-3 py-1.5 rounded-md font-bold text-white bg-tealaccent">English</button>
+                  <button id="lang-pid-btn" onclick="toggleLanguageAlert('pid')" class="px-3 py-1.5 rounded-md font-bold text-gray-400 hover:text-white">Pidgin</button>
+                </div>
+              </div>
+
+              <!-- Translation Panels -->
+              <div id="alert-text-en" class="text-xs font-mono text-amber-400 bg-amber-500/5 border border-amber-500/10 p-3 rounded-lg leading-relaxed">
+                "ALERT: Your GTBank Mobile Banking app has been deactivated due to login attempts. Verify immediately to restore access: https://gtb-update-portal-ng.com"
+              </div>
+              <div id="alert-text-pid" class="hidden text-xs font-mono text-amber-400 bg-amber-500/5 border border-amber-500/10 p-3 rounded-lg leading-relaxed">
+                "CUSTOMER ALERT: Your OPay account balance go be blocked within 3 hours. Press this link make you verify details sharp-sharp before dem block your funds: https://opay-nigeria-secure.com"
+              </div>
+            </div>
+          </div>
+
+          <!-- Logo Badges Grid -->
+          <div class="grid grid-cols-2 gap-6 scroll-reveal-right">
+            <div class="glass-panel p-6 rounded-xl border-white/5 text-center flex flex-col items-center justify-center hover:border-tealaccent/20 transition-all">
+              <span class="text-xs uppercase tracking-widest text-gray-500 font-bold block mb-1">Fintech Guard</span>
+              <span class="text-white font-extrabold text-lg">OPay</span>
+              <p class="text-[10px] text-gray-400 mt-2 font-light">Blocks balance update scam templates.</p>
+            </div>
+            
+            <div class="glass-panel p-6 rounded-xl border-white/5 text-center flex flex-col items-center justify-center hover:border-tealaccent/20 transition-all">
+              <span class="text-xs uppercase tracking-widest text-gray-500 font-bold block mb-1">Retail Banking</span>
+              <span class="text-white font-extrabold text-lg">GTBank</span>
+              <p class="text-[10px] text-gray-400 mt-2 font-light">Identifies mobile token harvest grids.</p>
+            </div>
+
+            <div class="glass-panel p-6 rounded-xl border-white/5 text-center flex flex-col items-center justify-center hover:border-tealaccent/20 transition-all">
+              <span class="text-xs uppercase tracking-widest text-gray-500 font-bold block mb-1">Academic Portals</span>
+              <span class="text-white font-extrabold text-lg">JAMB</span>
+              <p class="text-[10px] text-gray-400 mt-2 font-light">Warns candidates against fake upgrade links.</p>
+            </div>
+
+            <div class="glass-panel p-6 rounded-xl border-white/5 text-center flex flex-col items-center justify-center hover:border-tealaccent/20 transition-all">
+              <span class="text-xs uppercase tracking-widest text-gray-500 font-bold block mb-1">Public Revenue</span>
+              <span class="text-white font-extrabold text-lg">FIRS</span>
+              <p class="text-[10px] text-gray-400 mt-2 font-light">Halts fraudulent tax recovery setups.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-gradient-to-r from-tealaccent/10 to-cyanaccent/10 border border-tealaccent/20 rounded-2xl p-8 text-center scroll-reveal">
+          <h3 class="text-white font-bold text-xl mb-2">Free for Every Nigerian</h3>
+          <p class="text-gray-400 text-sm max-w-2xl mx-auto font-light leading-relaxed mb-4">
+            Security shouldn't be luxury. Individual threat scanning via our Web, WhatsApp, and Telegram interfaces remains free to protect Nigerian financial platforms.
+          </p>
+          <span class="text-[10px] text-tealaccent font-mono uppercase font-bold tracking-widest">⚡ CIPHERLABS ADVOCACY INITIATIVE</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 9: For Banks and Fintechs (Pricing & API Integration) -->
+    <section id="pricing" class="py-28 px-6 bg-[#090d18] border-t border-white/5 relative">
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-16 scroll-reveal">
+          <span class="text-tealaccent text-xs font-bold uppercase tracking-widest bg-tealaccent/10 px-3 py-1 rounded-full border border-tealaccent/10">B2B Integrations</span>
+          <h2 class="text-3xl sm:text-5xl font-extrabold text-white mt-4 tracking-tight">For Banks and Fintechs</h2>
+          <p class="text-tealaccent font-light text-lg mt-2">"CBN-mandated fraud prevention in one week"</p>
+        </div>
+
+        <!-- Pricing Tiers Table -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20 items-stretch">
+          <!-- Developer -->
+          <div class="glass-panel rounded-2xl p-8 border-white/5 flex flex-col justify-between scroll-reveal">
+            <div>
+              <h3 class="text-white font-bold text-xl mb-1">Developer</h3>
+              <p class="text-gray-500 text-xs font-light mb-6">Sandbox exploration & personal builds</p>
+              
+              <div class="mb-6">
+                <span class="text-white font-extrabold text-4xl">Free</span>
+                <span class="text-gray-500 text-xs">/ month</span>
+              </div>
+              
+              <ul class="space-y-3 text-xs text-gray-400 font-light mb-8">
+                <li class="flex items-center gap-2">
+                  <i data-lucide="check" class="w-4 h-4 text-tealaccent"></i>
+                  <span>1,000 sandbox queries/month</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <i data-lucide="check" class="w-4 h-4 text-tealaccent"></i>
+                  <span>ThreatScan reputation database</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <i data-lucide="check" class="w-4 h-4 text-tealaccent"></i>
+                  <span>Community support channel</span>
+                </li>
+              </ul>
+            </div>
+            <a href="#sandbox" class="w-full py-3 bg-white/5 border border-white/10 hover:bg-white/10 text-white font-bold rounded-xl text-center text-xs transition-all block">Get Started</a>
+          </div>
+
+          <!-- Growth -->
+          <div class="glass-panel rounded-2xl p-8 border-tealaccent/20 relative flex flex-col justify-between shadow-xl shadow-tealaccent/5 scroll-reveal">
+            <span class="absolute top-4 right-4 bg-tealaccent/20 text-tealaccent text-[9px] font-bold px-2 py-0.5 rounded border border-tealaccent/30 uppercase tracking-widest">Recommended</span>
+            <div>
+              <h3 class="text-white font-bold text-xl mb-1">Growth</h3>
+              <p class="text-gray-500 text-xs font-light mb-6">Growing fintechs & merchant apps</p>
+              
+              <div class="mb-6">
+                <span class="text-white font-extrabold text-4xl">₦75,000</span>
+                <span class="text-gray-500 text-xs">/ month</span>
+              </div>
+              
+              <ul class="space-y-3 text-xs text-gray-400 font-light mb-8">
+                <li class="flex items-center gap-2">
+                  <i data-lucide="check" class="w-4 h-4 text-tealaccent"></i>
+                  <span>50,000 URL reputation queries/month</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <i data-lucide="check" class="w-4 h-4 text-tealaccent"></i>
+                  <span>BehaviorID client SDK license</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <i data-lucide="check" class="w-4 h-4 text-tealaccent"></i>
+                  <span>99.9% API endpoint uptime guarantee</span>
+                </li>
+              </ul>
+            </div>
+            <a href="mailto:sales@cipherlabs.co" class="w-full py-3 bg-gradient-to-r from-tealaccent to-cyanaccent hover:brightness-110 text-white font-bold rounded-xl text-center text-xs transition-all block">Contact Sales</a>
+          </div>
+
+          <!-- Enterprise -->
+          <div class="glass-panel rounded-2xl p-8 border-white/5 flex flex-col justify-between scroll-reveal">
+            <div>
+              <h3 class="text-white font-bold text-xl mb-1">Enterprise</h3>
+              <p class="text-gray-500 text-xs font-light mb-6">Retail banking & large-scale financial channels</p>
+              
+              <div class="mb-6">
+                <span class="text-white font-extrabold text-4xl">Custom</span>
+              </div>
+              
+              <ul class="space-y-3 text-xs text-gray-400 font-light mb-8">
+                <li class="flex items-center gap-2">
+                  <i data-lucide="check" class="w-4 h-4 text-tealaccent"></i>
+                  <span>Unlimited query queries/month</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <i data-lucide="check" class="w-4 h-4 text-tealaccent"></i>
+                  <span>Custom biometrics telemetry model</span>
+                </li>
+                <li class="flex items-center gap-2">
+                  <i data-lucide="check" class="w-4 h-4 text-tealaccent"></i>
+                  <span>On-premise / private cloud deploy option</span>
+                </li>
+              </ul>
+            </div>
+            <a href="mailto:sales@cipherlabs.co" class="w-full py-3 bg-white/5 border border-white/10 hover:bg-white/10 text-white font-bold rounded-xl text-center text-xs transition-all block">Book Demo</a>
+          </div>
+        </div>
+
+        <!-- API Code Snippet Preview -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div class="scroll-reveal-left">
+            <h3 class="text-white font-extrabold text-2xl sm:text-3xl mb-4 leading-tight">Simple API Integration</h3>
+            <p class="text-gray-400 text-sm font-light leading-relaxed mb-6">
+              Integrate ThreatScan checks directly into transaction flows, profile updates, or sign-up funnels. A single POST call returns automated risk indicators in milliseconds.
+            </p>
+            <div class="flex items-center gap-4 text-tealaccent text-sm font-semibold">
+              <span class="flex items-center gap-1.5"><i data-lucide="code-2" class="w-4 h-4"></i> Clean JSON Format</span>
+              <span class="flex items-center gap-1.5"><i data-lucide="zap" class="w-4 h-4"></i> Under 150ms Latency</span>
+            </div>
+          </div>
+
+          <!-- Code Snippet Mock -->
+          <div class="scroll-reveal-right glass-panel rounded-2xl border border-white/10 overflow-hidden font-mono text-[11px] leading-relaxed">
+            <div class="bg-black/40 px-4 py-2.5 border-b border-white/5 flex items-center justify-between text-gray-500">
+              <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-[#34d399]/20 flex items-center justify-center text-[#34d399] font-bold text-[7px]">•</span> POST /api/scan</span>
+              <span class="text-xs">cURL</span>
+            </div>
+            
+            <pre class="p-6 overflow-x-auto text-gray-300"><code>curl -X POST https://api.shieldai.net/v1/scan \
+  -H <span class="text-teal-400">"Authorization: Bearer YOUR_API_KEY"</span> \
+  -H <span class="text-teal-400">"Content-Type: application/json"</span> \
+  -d <span class="text-emerald-400">'{ "url": "https://opay-nigeria-secure.com" }'</span>
+
+<span class="text-gray-600">// JSON Response Preview</span>
+{
+  <span class="text-teal-400">"verdict"</span>: <span class="text-emerald-400">"DANGEROUS"</span>,
+  <span class="text-teal-400">"risk_score"</span>: <span class="text-teal-300">92</span>,
+  <span class="text-teal-400">"impersonated_brand"</span>: <span class="text-emerald-400">"OPay"</span>
+}</code></pre>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION 10: Footer -->
+    <footer class="border-t border-white/5 bg-[#06080F] px-6 py-12 relative">
+      <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
+        
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-lg overflow-hidden border border-white/10 flex items-center justify-center bg-[#0d1421]">
+            <img src="/static/phishguard/logo.png" alt="ShieldAI Logo" class="w-full h-full object-cover" />
+          </div>
+          <div>
+            <p class="text-white font-bold text-sm tracking-tight flex items-center gap-1.5">
+              <span>ShieldAI</span>
+              <span class="text-[8px] text-tealaccent font-bold bg-tealaccent/10 border border-tealaccent/20 px-1.5 py-0.5 rounded">CIPHERLABS</span>
+            </p>
+            <p class="text-gray-600 text-[10px]">© 2026 CipherLabs. All rights reserved.</p>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-center gap-6 text-xs text-gray-500 font-light">
+          <a href="#sandbox" class="hover:text-white transition-colors">Web App</a>
+          <span>•</span>
+          <a href="https://wa.me/mocknumber" class="hover:text-white transition-colors">WhatsApp Bot</a>
+          <span>•</span>
+          <a href="https://t.me/shieldai_bot" class="hover:text-white transition-colors">Telegram Bot</a>
+          <span>•</span>
+          <p class="flex items-center gap-1.5 text-gray-600">
+            <i data-lucide="award" class="w-4.5 h-4.5 text-tealaccent"></i>
+            <span>OPay Innovation Challenge 2026</span>
+          </p>
+        </div>
+
+      </div>
+    </footer>
+
+    <!-- History Modal -->
+    <div id="historyModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div class="absolute inset-0 bg-darkspace/85 backdrop-blur-sm" onclick="toggleHistoryModal(false)"></div>
+      <div class="glass-panel w-full max-w-lg rounded-2xl p-6 shadow-2xl relative z-10">
+        <div class="flex items-center justify-between border-b border-white/5 pb-4 mb-4">
+          <div class="flex items-center gap-2">
+            <i data-lucide="history" class="w-5 h-5 text-tealaccent"></i>
+            <h3 class="text-white font-bold text-lg">Scan History</h3>
+          </div>
+          <button onclick="toggleHistoryModal(false)" class="text-gray-400 hover:text-white transition-colors">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+        <div id="historyList" class="max-h-72 overflow-y-auto space-y-2.5 pr-1 text-sm"></div>
+        <div class="flex items-center justify-between border-t border-white/5 pt-4 mt-4 text-xs">
+          <button onclick="clearHistory()" class="text-rose-400 hover:underline flex items-center gap-1.5 transition-colors">
+            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Clear History
+          </button>
+          <p class="text-gray-500">Showing last 10 scans</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Frontend Core Scripts -->
+    <script>
+      // Global configuration variables
+      const SCAN_URL = "/api/scan/";
+      const ANALYSE_EMAIL_URL = "/api/analyse-email/";
+      
+      let scanHistory = JSON.parse(localStorage.getItem("scanHistory") || "[]");
+      let activeSandboxTab = "url";
+
+      // On Page Loaded
+      document.addEventListener("DOMContentLoaded", () => {
+        lucide.createIcons();
+        setupScrollObserver();
+      });
+
+      // Intersection Observer for Scroll Reveals
+      function setupScrollObserver() {
+        const obsOptions = {
+          threshold: 0.1,
+          rootMargin: "0px 0px -40px 0px"
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("active");
+            }
+          });
+        }, obsOptions);
+
+        document.querySelectorAll(".scroll-reveal, .scroll-reveal-left, .scroll-reveal-right").forEach((el) => {
+          observer.observe(el);
+        });
+      }
+
+      // Switch sandbox tabs
+      function switchSandboxTab(tab) {
+        activeSandboxTab = tab;
+        const urlBtn = document.getElementById("tabBtn-url");
+        const emailBtn = document.getElementById("tabBtn-email");
+        const urlPanel = document.getElementById("sandbox-url-panel");
+        const emailPanel = document.getElementById("sandbox-email-panel");
+        const resultCard = document.getElementById("resultCard");
+
+        // Clear previous results
+        resultCard.classList.add("hidden");
+
+        if (tab === "url") {
+          urlBtn.className = "px-6 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center gap-2 bg-tealaccent text-white";
+          emailBtn.className = "px-6 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center gap-2 text-gray-400 hover:text-white";
+          urlPanel.classList.remove("hidden");
+          emailPanel.classList.add("hidden");
+        } else {
+          emailBtn.className = "px-6 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center gap-2 bg-tealaccent text-white";
+          urlBtn.className = "px-6 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center gap-2 text-gray-400 hover:text-white";
+          emailPanel.classList.remove("hidden");
+          urlPanel.classList.add("hidden");
+        }
+      }
+
+      // Paste utility
+      async function pasteFromClipboard(inputId) {
+        try {
+          const text = await navigator.clipboard.readText();
+          if (text) {
+            document.getElementById(inputId).value = text;
+          }
+        } catch (err) {
+          console.log("Clipboard read restricted", err);
+        }
+      }
+
+      // Core URL Scanner
+      async function scanLink() {
+        const input = document.getElementById("urlInput");
+        const url = input.value.trim();
+
+        if (!url) {
+          showError("Please paste a URL to scan.");
+          return;
+        }
+
+        setLoading(true, "url");
+
+        try {
+          const response = await fetch(SCAN_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ url }),
+          });
+
+          if (!response.ok) {
+            const err = await response.json();
+            showError(err.error || "Verification request failed.");
+            return;
+          }
+
+          const data = await response.json();
+          saveToHistory(url, "URL", data);
+          renderUrlResult(data);
+        } catch (err) {
+          showError("Cannot reach ShieldAI engines. Check backend service status.");
+        } finally {
+          setLoading(false, "url");
+        }
+      }
+
+      // Core Email Analyser (Live Feature API call)
+      async function analyseEmail() {
+        const textarea = document.getElementById("emailInput");
+        const emailContent = textarea.value.trim();
+
+        if (!emailContent) {
+          showError("Please paste raw email text content to analyse.");
+          return;
+        }
+
+        setLoading(true, "email");
+
+        try {
+          const response = await fetch(ANALYSE_EMAIL_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email_content: emailContent }),
+          });
+
+          if (!response.ok) {
+            const err = await response.json();
+            showError(err.error || "Email analysis failed.");
+            return;
+          }
+
+          const data = await response.json();
+          saveToHistory(emailContent.substring(0, 45) + "...", "Email", data);
+          renderEmailResult(data);
+        } catch (err) {
+          showError("Cannot connect to Email Analyser endpoint. Check server.");
+        } finally {
+          setLoading(false, "email");
+        }
+      }
+
+      // Set Loading spinner states
+      function setLoading(isLoading, type) {
+        if (type === "url") {
+          const btn = document.getElementById("scanBtn");
+          const input = document.getElementById("urlInput");
+          if (isLoading) {
+            btn.disabled = true;
+            input.disabled = true;
+            btn.classList.add("opacity-75", "cursor-not-allowed");
+            btn.innerHTML = `<i data-lucide="loader-2" class="w-4.5 h-4.5 spinner"></i> <span>Analyzing...</span>`;
+          } else {
+            btn.disabled = false;
+            input.disabled = false;
+            btn.classList.remove("opacity-75", "cursor-not-allowed");
+            btn.innerHTML = `<i data-lucide="search" class="w-4.5 h-4.5"></i> <span>Scan Link</span> <i data-lucide="chevron-right" class="w-4.5 h-4.5 ml-1"></i>`;
+          }
+        } else if (type === "email") {
+          const btn = document.getElementById("analyseEmailBtn");
+          const textarea = document.getElementById("emailInput");
+          if (isLoading) {
+            btn.disabled = true;
+            textarea.disabled = true;
+            btn.classList.add("opacity-75", "cursor-not-allowed");
+            btn.innerHTML = `<i data-lucide="loader-2" class="w-4.5 h-4.5 spinner"></i> <span>Evaluating content...</span>`;
+          } else {
+            btn.disabled = false;
+            textarea.disabled = false;
+            btn.classList.remove("opacity-75", "cursor-not-allowed");
+            btn.innerHTML = `<i data-lucide="sparkles" class="w-4.5 h-4.5"></i> <span>Analyse Email with Gemini</span> <i data-lucide="chevron-right" class="w-4 h-4 ml-1"></i>`;
+          }
+        }
+        lucide.createIcons();
+      }
+
+      // Handle Errors
+      function showError(message) {
+        const card = document.getElementById("resultCard");
+        card.classList.remove("hidden");
+        card.innerHTML = `
+          <div class="glass-panel border-red-500/20 rounded-2xl p-6 text-center shadow-lg">
+            <div class="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-3 text-red-400">
+              <i data-lucide="alert-octagon" class="w-6 h-6"></i>
+            </div>
+            <p class="text-red-400 text-sm font-medium">${message}</p>
+          </div>
+        `;
+        lucide.createIcons();
+      }
+
+      // Render URL Verdict Results
+      function renderUrlResult(data) {
+        const card = document.getElementById("resultCard");
+        const config = getVerdictConfig(data.verdict);
+        const { breakdown } = data;
+
+        const timestampStr = new Date().toLocaleString("en-US", {
+          month: "short", day: "numeric", hour: "2-digit", minute: "2-digit", hour12: true
+        });
+
+        const warningAlertHTML = data.verdict !== "SAFE"
+          ? `<div class="mt-4 p-4 bg-red-500/5 border border-red-500/15 rounded-xl flex items-start gap-3 text-red-400 font-medium">
+              <i data-lucide="alert-triangle" class="w-5 h-5 shrink-0 mt-0.5"></i>
+              <div>
+                <p class="text-xs font-bold text-red-300">Impersonation / Phishing Risk Warning</p>
+                <div class="text-[11px] font-light mt-1.5 space-y-1.5 text-red-400/90 leading-relaxed">
+                  ${data.active_flags.map((f) => `<div class="flex items-center gap-1.5">• <span>${f}</span></div>`).join("")}
+                </div>
+              </div>
+             </div>`
+          : "";
+
+        const breakdownHTML = `
+          <div class="mt-8 space-y-3.5">
+            <div class="flex items-center justify-between mb-4">
+              <p class="text-gray-500 text-[10px] uppercase tracking-widest font-bold">Security Breakdown</p>
+              <span class="h-px bg-white/5 flex-1 ml-4"></span>
+            </div>
+            ${renderCheckRow("activity", "VirusTotal Check", breakdown.virustotal)}
+            ${renderCheckRow("calendar", "Domain Age", breakdown.domain_age)}
+            ${renderCheckRow("search", "Google Safe Browsing", breakdown.safe_browsing)}
+            ${renderCheckRow("link-2", "URL Structure", breakdown.url_structure)}
+            ${renderCheckRow("sparkles", "Gemini AI Analysis", breakdown.gemini_ai)}
+          </div>
+        `;
+
+        card.classList.remove("hidden");
+        card.innerHTML = `
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-white font-bold text-sm">URL Verification Report</span>
+          </div>
+          
+          <div class="glass-panel border-white/5 ${config.border} ${config.glow} rounded-2xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
+            <div class="flex items-start justify-between flex-wrap gap-4 mb-4">
+              <div class="flex items-center gap-4">
+                <div class="p-3 ${config.bgIcon} ${config.iconColor} rounded-xl shadow-lg border border-white/5">
+                  <i data-lucide="${config.icon}" class="w-8 h-8"></i>
+                </div>
+                <div>
+                  <span class="inline-block border ${config.badge} text-[10px] font-extrabold px-3 py-0.5 rounded-full tracking-widest mb-1.5">${config.label}</span>
+                  <p class="text-white font-bold text-lg leading-snug">${data.message}</p>
+                </div>
+              </div>
+              <div class="text-left sm:text-right shrink-0">
+                <p class="text-gray-500 text-[9px] uppercase font-bold tracking-widest mb-0.5">Risk Score</p>
+                <p class="text-3xl font-extrabold ${config.scoreColor}">${data.risk_score}<span class="text-xs text-gray-500 font-normal"> / 100</span></p>
+                <p class="text-gray-500 text-[10px] mt-1">${timestampStr}</p>
+              </div>
+            </div>
+            
+            ${warningAlertHTML}
+            ${breakdownHTML}
+            
+            <div class="mt-6 pt-5 border-t border-white/5 flex justify-end">
+              <button onclick="document.getElementById('urlInput').value=''; document.getElementById('resultCard').className='hidden';" class="text-xs font-semibold text-tealaccent hover:text-cyan-400 hover:underline flex items-center gap-1.5 transition-colors">
+                <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Clear Sandbox
+              </button>
+            </div>
+          </div>
+        `;
+        lucide.createIcons();
+      }
+
+      // Render Email Verdict Results
+      function renderEmailResult(data) {
+        const card = document.getElementById("resultCard");
+        const config = getVerdictConfig(data.verdict === "Phishing Attempt" ? "DANGEROUS" : (data.verdict === "Suspicious" ? "SUSPICIOUS" : "SAFE"));
+        
+        const timestampStr = new Date().toLocaleString("en-US", {
+          month: "short", day: "numeric", hour: "2-digit", minute: "2-digit", hour12: true
+        });
+
+        const flagsHTML = data.flags && data.flags.length > 0
+          ? `<div class="mt-4 p-4 bg-red-500/5 border border-red-500/15 rounded-xl">
+              <p class="text-xs font-bold text-red-300 mb-2 flex items-center gap-1"><i data-lucide="alert-triangle" class="w-4 h-4"></i> Identified Threats</p>
+              <ul class="text-[11px] font-light text-red-400 space-y-1">
+                ${data.flags.map(f => `<li>• ${f}</li>`).join("")}
+              </ul>
+             </div>`
+          : "";
+
+        card.classList.remove("hidden");
+        card.innerHTML = `
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-white font-bold text-sm">Email Phishing Audit Report</span>
+          </div>
+
+          <div class="glass-panel border-white/5 ${config.border} ${config.glow} rounded-2xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
+            <div class="flex items-start justify-between flex-wrap gap-4 mb-4">
+              <div class="flex items-center gap-4">
+                <div class="p-3 ${config.bgIcon} ${config.iconColor} rounded-xl shadow-lg border border-white/5">
+                  <i data-lucide="mail-open" class="w-8 h-8"></i>
+                </div>
+                <div>
+                  <span class="inline-block border ${config.badge} text-[10px] font-extrabold px-3 py-0.5 rounded-full tracking-widest mb-1.5">${data.verdict.toUpperCase()}</span>
+                  <p class="text-white font-bold text-lg leading-snug">${data.summary}</p>
+                </div>
+              </div>
+              <div class="text-left sm:text-right shrink-0">
+                <p class="text-gray-500 text-[9px] uppercase font-bold tracking-widest mb-0.5">Threat Score</p>
+                <p class="text-3xl font-extrabold ${config.scoreColor}">${data.risk_score}<span class="text-xs text-gray-500 font-normal"> / 100</span></p>
+                <p class="text-gray-500 text-[10px] mt-1">${timestampStr}</p>
+              </div>
+            </div>
+
+            ${flagsHTML}
+
+            <div class="mt-6 pt-5 border-t border-white/5 flex justify-end">
+              <button onclick="document.getElementById('emailInput').value=''; document.getElementById('resultCard').className='hidden';" class="text-xs font-semibold text-tealaccent hover:text-cyan-400 hover:underline flex items-center gap-1.5 transition-colors">
+                <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Clear Sandbox
+              </button>
+            </div>
+          </div>
+        `;
+        lucide.createIcons();
+      }
+
+      // Row formatter helper
+      function renderCheckRow(iconName, label, check) {
+        if (!check) return "";
+        let statusTag = check.status;
+        if (check.status === "FAILED" && label === "Gemini AI Analysis") statusTag = "MALICIOUS";
+        else if (check.status === "FAILED" && label === "Google Safe Browsing") statusTag = "FLAGGED";
+        else if (check.status === "WARNING" && label === "Domain Age") statusTag = "HIGH RISK";
+
+        return `
+          <div class="flex items-center justify-between gap-4 bg-[#080b14]/65 border border-white/5 rounded-xl px-4 py-3.5 hover:bg-[#0f1423]/50 transition-colors duration-200">
+            <div class="flex items-center gap-3.5 min-w-0">
+              <div class="p-2 bg-white/5 rounded-lg text-gray-400 shrink-0">
+                <i data-lucide="${iconName}" class="w-4 h-4 text-tealaccent"></i>
+              </div>
+              <div class="min-w-0">
+                <p class="text-white text-sm font-semibold truncate">${label}</p>
+                <p class="text-gray-400 text-xs mt-0.5 truncate max-w-[200px] sm:max-w-[400px] font-light">${check.note || "No analysis indicators reported."}</p>
+              </div>
+            </div>
+            <div class="shrink-0">
+              ${getStatusBadge(statusTag)}
+            </div>
+          </div>
+        `;
+      }
+
+      // Config and Status mapping functions
+      function getVerdictConfig(verdict) {
+        const configs = {
+          SAFE: {
+            border: "border-l-emerald-500 border-l-4",
+            badge: "bg-emerald-500/10 text-emerald-400 border-emerald-500/25",
+            glow: "glow-green",
+            scoreColor: "text-emerald-400",
+            icon: "shield-check",
+            iconColor: "text-emerald-400",
+            bgIcon: "bg-emerald-500/10",
+            label: "SAFE",
+          },
+          SUSPICIOUS: {
+            border: "border-l-amber-500 border-l-4",
+            badge: "bg-amber-500/10 text-amber-400 border-amber-500/25",
+            glow: "glow-amber",
+            scoreColor: "text-amber-400",
+            icon: "alert-triangle",
+            iconColor: "text-amber-400",
+            bgIcon: "bg-amber-500/10",
+            label: "SUSPICIOUS",
+          },
+          DANGEROUS: {
+            border: "border-l-red-500 border-l-4",
+            badge: "bg-red-500/10 text-red-400 border-red-500/25",
+            glow: "glow-red",
+            scoreColor: "text-red-400",
+            icon: "skull",
+            iconColor: "text-red-400",
+            bgIcon: "bg-red-500/10",
+            label: "DANGEROUS",
+          },
+        };
+        return configs[verdict] || configs.SUSPICIOUS;
+      }
+
+      function getStatusBadge(status) {
+        const badges = {
+          PASSED: `<span class="text-[9px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/25 px-2 py-0.5 rounded tracking-wide uppercase">PASSED</span>`,
+          FAILED: `<span class="text-[9px] font-bold bg-red-500/15 text-red-400 border border-red-500/25 px-2 py-0.5 rounded tracking-wide uppercase">FAILED</span>`,
+          WARNING: `<span class="text-[9px] font-bold bg-amber-500/15 text-amber-400 border border-amber-500/25 px-2 py-0.5 rounded tracking-wide uppercase">WARNING</span>`,
+          SKIPPED: `<span class="text-[9px] font-bold bg-gray-500/15 text-gray-400 border border-gray-500/20 px-2 py-0.5 rounded tracking-wide uppercase">SKIPPED</span>`,
+          ERROR: `<span class="text-[9px] font-bold bg-rose-500/15 text-rose-400 border border-rose-500/20 px-2 py-0.5 rounded tracking-wide uppercase">ERROR</span>`,
+          MALICIOUS: `<span class="text-[9px] font-bold bg-red-500/15 text-red-400 border border-red-500/25 px-2 py-0.5 rounded tracking-wide uppercase">MALICIOUS</span>`,
+          FLAGGED: `<span class="text-[9px] font-bold bg-red-500/15 text-red-400 border border-red-500/25 px-2 py-0.5 rounded tracking-wide uppercase">FLAGGED</span>`,
+          "HIGH RISK": `<span class="text-[9px] font-bold bg-red-500/15 text-red-400 border border-red-500/25 px-2 py-0.5 rounded tracking-wide uppercase font-semibold">HIGH RISK</span>`,
+          SAFE: `<span class="text-[9px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/25 px-2 py-0.5 rounded tracking-wide uppercase">SAFE</span>`,
+          SUSPICIOUS: `<span class="text-[9px] font-bold bg-amber-500/15 text-amber-400 border border-amber-500/25 px-2 py-0.5 rounded tracking-wide uppercase">SUSPICIOUS</span>`,
+          DANGEROUS: `<span class="text-[9px] font-bold bg-red-500/15 text-red-400 border border-red-500/25 px-2 py-0.5 rounded tracking-wide uppercase">DANGEROUS</span>`,
+        };
+        return badges[status] || badges.SKIPPED;
+      }
+
+      // History variables and modal triggers
+      function saveToHistory(text, scanType, resultData) {
+        const timestamp = new Date().toLocaleString("en-US", {
+          month: "short", day: "numeric", hour: "2-digit", minute: "2-digit", hour12: true
+        });
+        const scanObject = {
+          url: text,
+          scanType,
+          verdict: resultData.verdict || (resultData.risk_score > 60 ? "DANGEROUS" : (resultData.risk_score > 15 ? "SUSPICIOUS" : "SAFE")),
+          risk_score: resultData.risk_score || 0,
+          timestamp,
+          data: resultData
+        };
+
+        scanHistory = scanHistory.filter(h => h.url !== text);
+        scanHistory.unshift(scanObject);
+        if (scanHistory.length > 10) scanHistory.pop();
+        localStorage.setItem("scanHistory", JSON.stringify(scanHistory));
+      }
+
+      // Modal triggers
+      function toggleHistoryModal(show) {
+        const modal = document.getElementById("historyModal");
+        if (show) {
+          modal.classList.remove("hidden");
+          renderHistoryList();
+        } else {
+          modal.classList.add("hidden");
+        }
+      }
+
+      function renderHistoryList() {
+        const list = document.getElementById("historyList");
+        if (scanHistory.length === 0) {
+          list.innerHTML = `
+            <div class="text-center py-8 text-gray-500">
+              <i data-lucide="history" class="w-8 h-8 mx-auto mb-2 opacity-35"></i>
+              <p>No scans in memory history</p>
+            </div>
+          `;
+          lucide.createIcons();
+          return;
+        }
+
+        list.innerHTML = scanHistory.map((h, idx) => {
+          const config = getVerdictConfig(h.verdict === "Phishing Attempt" ? "DANGEROUS" : (h.verdict === "Suspicious" ? "SUSPICIOUS" : h.verdict));
+          return `
+            <div onclick="loadFromHistory(${idx})" class="flex items-center justify-between gap-4 p-3 bg-white/5 border border-white/5 rounded-xl cursor-pointer hover:bg-white/10 transition-all">
+              <div class="min-w-0 flex-1">
+                <p class="text-white text-xs truncate font-medium">${h.url}</p>
+                <p class="text-gray-500 text-[9px] mt-0.5">${h.scanType} • ${h.timestamp}</p>
+              </div>
+              <div class="flex items-center gap-3 shrink-0">
+                <span class="text-xs font-bold ${config.scoreColor}">${h.risk_score}/100</span>
+                ${getStatusBadge(h.verdict)}
+              </div>
+            </div>
+          `;
+        }).join("");
+        lucide.createIcons();
+      }
+
+      function loadFromHistory(index) {
+        const scan = scanHistory[index];
+        if (scan) {
+          toggleHistoryModal(false);
+          if (scan.scanType === "URL") {
+            switchSandboxTab("url");
+            document.getElementById("urlInput").value = scan.url;
+            renderUrlResult(scan.data);
+          } else {
+            switchSandboxTab("email");
+            document.getElementById("emailInput").value = scan.url;
+            renderEmailResult(scan.data);
+          }
+          document.getElementById("sandbox").scrollIntoView();
+        }
+      }
+
+      function clearHistory() {
+        scanHistory = [];
+        localStorage.removeItem("scanHistory");
+        renderHistoryList();
+      }
+
+      // Language Alert Toggles (English vs Pidgin)
+      function toggleLanguageAlert(lang) {
+        const enBtn = document.getElementById("lang-en-btn");
+        const pidBtn = document.getElementById("lang-pid-btn");
+        const textEn = document.getElementById("alert-text-en");
+        const textPid = document.getElementById("alert-text-pid");
+
+        if (lang === "en") {
+          enBtn.className = "px-3 py-1.5 rounded-md font-bold text-white bg-tealaccent";
+          pidBtn.className = "px-3 py-1.5 rounded-md font-bold text-gray-400 hover:text-white";
+          textEn.classList.remove("hidden");
+          textPid.classList.add("hidden");
+        } else {
+          pidBtn.className = "px-3 py-1.5 rounded-md font-bold text-white bg-tealaccent";
+          enBtn.className = "px-3 py-1.5 rounded-md font-bold text-gray-400 hover:text-white";
+          textPid.classList.remove("hidden");
+          textEn.classList.add("hidden");
+        }
+      }
+
+      // BehaviorID Telemetry Playground Logic
+      let keystrokeTimestamps = [];
+      let totalKeysPressed = 0;
+
+      function updateTelemetryData(event) {
+        totalKeysPressed++;
+        document.getElementById("tel-keys").textContent = totalKeysPressed;
+        
+        const now = performance.now();
+        keystrokeTimestamps.push(now);
+        if (keystrokeTimestamps.length > 8) keystrokeTimestamps.shift();
+
+        // Calculate latency between key presses
+        if (keystrokeTimestamps.length > 1) {
+          let totalDiff = 0;
+          for (let i = 1; i < keystrokeTimestamps.length; i++) {
+            totalDiff += (keystrokeTimestamps[i] - keystrokeTimestamps[i-1]);
+          }
+          const avgLatency = Math.round(totalDiff / (keystrokeTimestamps.length - 1));
+          document.getElementById("tel-latency").textContent = `${avgLatency} ms`;
+        }
+
+        // Calculate WPM estimate
+        const textLength = event.target.value.trim().split(/\s+/).filter(Boolean).length;
+        const durationSec = (now - keystrokeTimestamps[0]) / 1000;
+        if (durationSec > 1) {
+          const wpm = Math.round((textLength / durationSec) * 60);
+          document.getElementById("tel-wpm").textContent = `${Math.min(wpm, 150)} WPM`;
+        }
+
+        // Randomly simulate scrolling & orientation angles to display live activity
+        const mockScroll = Math.floor(Math.random() * 45) + 5;
+        document.getElementById("tel-scroll").textContent = `${mockScroll} px/s`;
+      }
+    </script>
+  </body>
+</html>

@@ -118,3 +118,77 @@ Respond in this exact JSON format with no additional text:
             "analysis": None,
         }
 
+
+def analyse_email_with_gemini(email_content: str) -> dict:
+    api_key = settings.GEMINI_API_KEY
+
+    if not api_key:
+        return {
+            "status": "SKIPPED",
+            "verdict": "Suspicious",
+            "risk_score": 0,
+            "flags": ["API Key Config Warning"],
+            "summary": "Gemini API key not configured in backend environment.",
+        }
+
+    try:
+        client = genai.Client(api_key=api_key)
+
+        prompt = f"""
+You are a cybersecurity expert specialising in email fraud and phishing detection for Nigerian internet users.
+
+Analyse this raw email content:
+---
+{email_content}
+---
+
+Focus specifically on identifying:
+1. Phishing indicators and sender spoofing patterns (e.g. claiming to be GTBank, OPay, JAMB, FIRS, etc. but using generic/incorrect domains).
+2. Urgency language or manipulative language prompting immediate action (e.g. "account blocked", "immediate verification needed").
+3. Suspicious links or credential harvesting forms inside the email.
+
+Determine the risk score (from 0 to 100) and provide a list of flags and a concise, clear plain English explanation suitable for a non-technical Nigerian user.
+
+Respond in this exact JSON format with no additional text:
+{{
+    "verdict": "Legitimate" or "Suspicious" or "Phishing Attempt",
+    "risk_score": 0 to 100,
+    "flags": [
+        "list of threat indicators found"
+    ],
+    "summary": "One sentence plain English explanation suitable for a non-technical Nigerian user"
+}}
+"""
+
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt,
+        )
+        text = response.text.strip()
+
+        # Clean response
+        if text.startswith("```"):
+            text = text.split("```")[1]
+            if text.startswith("json"):
+                text = text[4:]
+        text = text.strip()
+
+        result = json.loads(text)
+        return {
+            "status": "SUCCESS",
+            "verdict": result.get("verdict", "Suspicious"),
+            "risk_score": result.get("risk_score", 50),
+            "flags": result.get("flags", []),
+            "summary": result.get("summary", "No summary analysis available."),
+        }
+
+    except Exception as e:
+        return {
+            "status": "ERROR",
+            "verdict": "Suspicious",
+            "risk_score": 0,
+            "flags": ["Analysis Failed"],
+            "summary": f"Could not perform email analysis: {str(e)}",
+        }
+
+
